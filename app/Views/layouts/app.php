@@ -28,9 +28,11 @@
 <div class="d-flex" style="min-height: calc(100vh - 56px);">
     <aside class="sidebar p-3 d-flex flex-column gap-1">
         <a href="/dashboard" class="nav-link px-3 py-2 <?= uri_string() === 'dashboard' ? 'active' : '' ?>">
-            Dashboard
+            🏠 Dashboard
         </a>
-        <?php /* future nav items will go here */ ?>
+        <a href="/org/requests" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/requests') ? 'active' : '' ?>">
+            📋 Demandes d'adhésion
+        </a>
     </aside>
 
     <main class="p-4">

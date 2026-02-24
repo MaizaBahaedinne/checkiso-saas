@@ -22,10 +22,17 @@
         <form method="post" action="/register">
             <?= csrf_field() ?>
 
-            <div class="mb-3">
-                <label class="form-label fw-medium">Full name</label>
-                <input type="text" name="display_name" class="form-control"
-                       value="<?= esc(old('display_name')) ?>" required autofocus>
+            <div class="row g-3 mb-3">
+                <div class="col-6">
+                    <label class="form-label fw-medium">First name</label>
+                    <input type="text" name="first_name" class="form-control"
+                           value="<?= esc(old('first_name')) ?>" required autofocus>
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-medium">Last name</label>
+                    <input type="text" name="last_name" class="form-control"
+                           value="<?= esc(old('last_name')) ?>" required>
+                </div>
             </div>
 
             <div class="mb-3">
@@ -39,18 +46,9 @@
                 <input type="password" name="password" class="form-control" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-4">
                 <label class="form-label fw-medium">Confirm password</label>
                 <input type="password" name="password_confirm" class="form-control" required>
-            </div>
-
-            <hr class="my-3">
-
-            <div class="mb-4">
-                <label class="form-label fw-medium">Organisation name</label>
-                <input type="text" name="tenant_name" class="form-control"
-                       value="<?= esc(old('tenant_name')) ?>" required>
-                <div class="form-text">Your company or team workspace on CheckISO.</div>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Create account</button>

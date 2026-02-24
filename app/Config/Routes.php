@@ -21,4 +21,16 @@ $routes->get('/logout',   'Web\AuthController::logout');
 // ---------------------------------------------------------------------------
 $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->get('/dashboard', 'Web\DashboardController::index');
+
+    // Onboarding (logged in but no tenant yet)
+    $routes->get('/onboarding',           'Web\OnboardingController::index');
+    $routes->get('/onboarding/search',    'Web\OnboardingController::search');
+    $routes->post('/onboarding/create',   'Web\OnboardingController::create');
+    $routes->post('/onboarding/join',     'Web\OnboardingController::join');
+    $routes->get('/onboarding/pending',   'Web\OnboardingController::pending');
+
+    // Org admin — join request management
+    $routes->get('/org/requests',                        'Web\JoinRequestController::index');
+    $routes->post('/org/requests/(:num)/approve',        'Web\JoinRequestController::approve/$1');
+    $routes->post('/org/requests/(:num)/reject',         'Web\JoinRequestController::reject/$1');
 });
