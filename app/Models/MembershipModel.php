@@ -36,4 +36,20 @@ class MembershipModel extends Model
                     ->where('status', 'active')
                     ->first();
     }
+
+    /**
+     * Returns the role code (e.g. 'org.admin') assigned to a given membership,
+     * or null if no role has been assigned yet.
+     */
+    public function getRoleCode(int $membershipId): ?string
+    {
+        $db  = \Config\Database::connect();
+        $row = $db->table('membership_roles mr')
+                  ->select('r.code')
+                  ->join('roles r', 'r.id = mr.role_id')
+                  ->where('mr.membership_id', $membershipId)
+                  ->get()->getRowArray();
+
+        return $row['code'] ?? null;
+    }
 }

@@ -29,23 +29,30 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->post('/onboarding/join',     'Web\OnboardingController::join');
     $routes->get('/onboarding/pending',   'Web\OnboardingController::pending');
 
-    // Org admin — join request management
-    $routes->get('/org/requests',                        'Web\JoinRequestController::index');
-    $routes->post('/org/requests/(:num)/approve',        'Web\JoinRequestController::approve/$1');
-    $routes->post('/org/requests/(:num)/reject',         'Web\JoinRequestController::reject/$1');
+    // Org — any member can view
+    $routes->get('/org/members',          'Web\OrgController::members');
 
-    // Org settings
-    $routes->get('/org/settings',                        'Web\OrgController::settings');
-    $routes->post('/org/settings',                       'Web\OrgController::settingsPost');
+    // -----------------------------------------------------------------------
+    // Admin-only routes (role: org.admin)
+    // -----------------------------------------------------------------------
+    $routes->group('', ['filter' => 'role:org.admin'], static function ($routes): void {
+        // Settings
+        $routes->get('/org/settings',                   'Web\OrgController::settings');
+        $routes->post('/org/settings',                  'Web\OrgController::settingsPost');
 
-    // Org members
-    $routes->get('/org/members',                         'Web\OrgController::members');
-    $routes->post('/org/members/(:num)/role',            'Web\OrgController::memberRole/$1');
-    $routes->post('/org/members/(:num)/remove',          'Web\OrgController::memberRemove/$1');
+        // Member management
+        $routes->post('/org/members/(:num)/role',       'Web\OrgController::memberRole/$1');
+        $routes->post('/org/members/(:num)/remove',     'Web\OrgController::memberRemove/$1');
 
-    // Invitations
-    $routes->post('/org/invite',                         'Web\InvitationController::send');
-    $routes->post('/org/invite/(:num)/cancel',           'Web\InvitationController::cancel/$1');
+        // Join requests
+        $routes->get('/org/requests',                   'Web\JoinRequestController::index');
+        $routes->post('/org/requests/(:num)/approve',   'Web\JoinRequestController::approve/$1');
+        $routes->post('/org/requests/(:num)/reject',    'Web\JoinRequestController::reject/$1');
+
+        // Invitations
+        $routes->post('/org/invite',                    'Web\InvitationController::send');
+        $routes->post('/org/invite/(:num)/cancel',      'Web\InvitationController::cancel/$1');
+    });
 });
 
 // Public invite acceptance (no auth required — handled inside the controller)

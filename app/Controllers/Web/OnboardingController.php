@@ -119,6 +119,7 @@ class OnboardingController extends BaseController
         session()->set([
             'tenant_id'     => $tenantId,
             'membership_id' => $membershipId,
+            'role_code'     => 'org.admin',
         ]);
 
         return redirect()->to('/dashboard')->with('success', 'Organisation created! Welcome to CheckISO.');

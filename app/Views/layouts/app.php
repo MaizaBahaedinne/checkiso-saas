@@ -34,12 +34,14 @@
         <a href="<?= site_url('org/members') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/members') ? 'active' : '' ?>">
             👥 Members
         </a>
+        <?php if (session()->get('role_code') === 'org.admin'): ?>
         <a href="<?= site_url('org/requests') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/requests') ? 'active' : '' ?>">
             📋 Join requests
         </a>
         <a href="<?= site_url('org/settings') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/settings') ? 'active' : '' ?>">
             ⚙️ Settings
         </a>
+        <?php endif ?>
     </aside>
 
     <main class="p-4">

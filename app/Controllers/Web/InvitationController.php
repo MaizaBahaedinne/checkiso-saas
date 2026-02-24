@@ -155,12 +155,15 @@ class InvitationController extends BaseController
             $this->createMembership($userId, $inv, $db);
             $this->markAccepted($inv['id']);
 
+            $newMembership = $this->membershipModel
+                ->where('tenant_id', $inv['tenant_id'])
+                ->where('user_id', $userId)
+                ->first();
+
             session()->set([
                 'tenant_id'     => $inv['tenant_id'],
-                'membership_id' => $this->membershipModel
-                    ->where('tenant_id', $inv['tenant_id'])
-                    ->where('user_id', $userId)
-                    ->first()['id'] ?? null,
+                'membership_id' => $newMembership['id'] ?? null,
+                'role_code'     => $inv['role_code'],
             ]);
 
             return redirect()->to(site_url('dashboard'))
@@ -210,6 +213,7 @@ class InvitationController extends BaseController
             'user_name'     => UserModel::fullName($user),
             'tenant_id'     => $inv['tenant_id'],
             'membership_id' => $membershipId,
+            'role_code'     => $inv['role_code'],
         ]);
 
         return redirect()->to(site_url('dashboard'))

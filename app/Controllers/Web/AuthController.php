@@ -60,12 +60,17 @@ class AuthController extends BaseController
         // Resolve tenant context from the default membership
         $membership = $this->membershipModel->getDefaultForUser($user['id']);
 
+        $roleCode = $membership
+            ? $this->membershipModel->getRoleCode($membership['id'])
+            : null;
+
         session()->set([
             'user_id'       => $user['id'],
             'user_email'    => $user['email'],
             'user_name'     => UserModel::fullName($user),
             'tenant_id'     => $membership['tenant_id'] ?? null,
             'membership_id' => $membership['id'] ?? null,
+            'role_code'     => $roleCode,
         ]);
 
         $this->userModel->update($user['id'], ['last_login_at' => date('Y-m-d H:i:s')]);

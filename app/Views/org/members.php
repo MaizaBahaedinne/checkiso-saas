@@ -4,12 +4,14 @@
 <div class="d-flex align-items-center justify-content-between mb-4">
     <h4 class="fw-semibold mb-0">Members</h4>
     <div class="d-flex gap-2">
+        <?php if (session()->get('role_code') === 'org.admin'): ?>
         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#inviteModal">
             ✉️ Invite member
         </button>
         <a href="<?= site_url('org/requests') ?>" class="btn btn-outline-secondary btn-sm">
             📋 Join requests
         </a>
+        <?php endif ?>
     </div>
 </div>
 
@@ -100,7 +102,7 @@
                     </td>
                     <td class="small text-muted"><?= esc(date('d M Y', strtotime($m['joined_at']))) ?></td>
                     <td class="text-end">
-                        <?php if (! $isSelf && $m['status'] === 'active'): ?>
+                        <?php if (session()->get('role_code') === 'org.admin' && ! $isSelf && $m['status'] === 'active'): ?>
                             <!-- Role toggle -->
                             <form method="post"
                                   action="<?= site_url('org/members/' . $m['membership_id'] . '/role') ?>"
