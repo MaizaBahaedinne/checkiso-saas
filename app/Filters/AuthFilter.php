@@ -21,14 +21,15 @@ class AuthFilter implements FilterInterface
 
         // Logged in but no tenant yet → onboarding routes are always allowed.
         // Any other protected route requires a tenant context.
-        $path = '/' . ltrim($request->getUri()->getPath(), '/');
+        // Note: path may include /index.php/ prefix on servers without URL rewriting.
+        $path = $request->getUri()->getPath();
 
-        if (str_starts_with($path, '/onboarding')) {
+        if (str_contains($path, '/onboarding')) {
             return; // pass through — no tenant required
         }
 
         if (! session()->get('tenant_id')) {
-            return redirect()->to('/onboarding')
+            return redirect()->to(site_url('onboarding'))
                 ->with('info', 'Please create or join an organisation first.');
         }
     }
