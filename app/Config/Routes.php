@@ -33,4 +33,13 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->get('/org/requests',                        'Web\JoinRequestController::index');
     $routes->post('/org/requests/(:num)/approve',        'Web\JoinRequestController::approve/$1');
     $routes->post('/org/requests/(:num)/reject',         'Web\JoinRequestController::reject/$1');
+
+    // Org settings
+    $routes->get('/org/settings',                        'Web\OrgController::settings');
+    $routes->post('/org/settings',                       'Web\OrgController::settingsPost');
+
+    // Org members
+    $routes->get('/org/members',                         'Web\OrgController::members');
+    $routes->post('/org/members/(:num)/role',            'Web\OrgController::memberRole/$1');
+    $routes->post('/org/members/(:num)/remove',          'Web\OrgController::memberRemove/$1');
 });

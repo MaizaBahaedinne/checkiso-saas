@@ -27,11 +27,18 @@
 
 <div class="d-flex" style="min-height: calc(100vh - 56px);">
     <aside class="sidebar p-3 d-flex flex-column gap-1">
-        <a href="/dashboard" class="nav-link px-3 py-2 <?= uri_string() === 'dashboard' ? 'active' : '' ?>">
+        <a href="<?= site_url('dashboard') ?>" class="nav-link px-3 py-2 <?= uri_string() === 'dashboard' ? 'active' : '' ?>">
             🏠 Dashboard
         </a>
-        <a href="/org/requests" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/requests') ? 'active' : '' ?>">
-            📋 Demandes d'adhésion
+        <div class="text-uppercase text-muted px-3 mt-3 mb-1" style="font-size:.68rem;letter-spacing:.07em;">Organisation</div>
+        <a href="<?= site_url('org/members') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/members') ? 'active' : '' ?>">
+            👥 Members
+        </a>
+        <a href="<?= site_url('org/requests') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/requests') ? 'active' : '' ?>">
+            📋 Join requests
+        </a>
+        <a href="<?= site_url('org/settings') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/settings') ? 'active' : '' ?>">
+            ⚙️ Settings
         </a>
     </aside>
 
