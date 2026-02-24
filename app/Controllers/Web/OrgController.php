@@ -3,6 +3,7 @@
 namespace App\Controllers\Web;
 
 use App\Controllers\BaseController;
+use App\Models\InvitationModel;
 use App\Models\MembershipModel;
 use App\Models\TenantModel;
 use App\Models\UserModel;
@@ -27,6 +28,7 @@ class OrgController extends BaseController
     private TenantModel $tenantModel;
     private MembershipModel $membershipModel;
     private UserModel $userModel;
+    private InvitationModel $invitationModel;
 
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger): void
     {
@@ -34,6 +36,7 @@ class OrgController extends BaseController
         $this->tenantModel     = new TenantModel();
         $this->membershipModel = new MembershipModel();
         $this->userModel       = new UserModel();
+        $this->invitationModel = new InvitationModel();
     }
 
     // -------------------------------------------------------------------------
@@ -109,8 +112,9 @@ class OrgController extends BaseController
             ->get()->getResultArray();
 
         return view('org/members', [
-            'title'   => 'Members — CheckISO',
-            'members' => $members,
+            'title'       => 'Members — CheckISO',
+            'members'     => $members,
+            'invitations' => $this->invitationModel->forTenant($tenantId),
         ]);
     }
 

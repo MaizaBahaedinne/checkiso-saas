@@ -42,4 +42,12 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->get('/org/members',                         'Web\OrgController::members');
     $routes->post('/org/members/(:num)/role',            'Web\OrgController::memberRole/$1');
     $routes->post('/org/members/(:num)/remove',          'Web\OrgController::memberRemove/$1');
+
+    // Invitations
+    $routes->post('/org/invite',                         'Web\InvitationController::send');
+    $routes->post('/org/invite/(:num)/cancel',           'Web\InvitationController::cancel/$1');
 });
+
+// Public invite acceptance (no auth required — handled inside the controller)
+$routes->get('/invite/(:hex)',  'Web\InvitationController::accept/$1');
+$routes->post('/invite/(:hex)', 'Web\InvitationController::acceptPost/$1');
