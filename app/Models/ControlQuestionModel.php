@@ -29,6 +29,8 @@ class ControlQuestionModel extends Model
             ->orderBy('sort_order', 'ASC')
             ->get()->getResultArray();
 
+        shuffle($choices);   // Randomise display order each page load
+
         $question['choices'] = $choices;
         return $question;
     }
