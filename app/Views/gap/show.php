@@ -95,12 +95,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
     $savedKey = $ans ? $ans['choice_key'] : null;
     $cardBorder = '';
     if ($ans) {
-        $cardBorder = match($ans['status']) {
-            'conforme'     => 'border-success',
-            'partiel'      => 'border-warning',
-            'non_conforme' => 'border-danger',
-            default        => '',
-        };
+        $cardBorder = 'border-start border-3 border-primary bg-primary bg-opacity-10';
     }
 ?>
                 <div class="quiz-card p-4 border-bottom <?= $cardBorder ?>"
@@ -127,15 +122,9 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
 <?php foreach ($qa['choices'] as $ch): ?>
                         <?php
                         $isSelected = $savedKey === $ch['choice_key'];
-                        $choiceClass = 'quiz-choice btn btn-outline-secondary text-start w-100 position-relative';
+                        $choiceClass = 'quiz-choice btn btn-outline-secondary text-start w-100';
                         if ($isSelected) {
-                            $choiceClass = 'quiz-choice btn text-start w-100 position-relative ';
-                            $choiceClass .= match($ans['status']) {
-                                'conforme'     => 'btn-success',
-                                'partiel'      => 'btn-warning',
-                                'non_conforme' => 'btn-danger',
-                                default        => 'btn-secondary',
-                            };
+                            $choiceClass = 'quiz-choice btn btn-primary text-start w-100';
                         }
                         if ($ch['is_manual_review']) {
                             $choiceClass .= $isSelected ? '' : ' text-muted fst-italic';
@@ -275,7 +264,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
         const cards  = document.querySelectorAll(`.quiz-card[data-domain-id="${domainId}"]`);
         let answered = 0;
         cards.forEach(c => {
-            const active = c.querySelector('.quiz-choice.btn-success, .quiz-choice.btn-warning, .quiz-choice.btn-danger');
+            const active = c.querySelector('.quiz-choice.btn-primary');
             if (active) answered++;
         });
         const badge = document.querySelector(`.domain-progress-badge[data-domain-id="${domainId}"]`);
@@ -380,24 +369,16 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                     // Update CSRF
                     document.querySelector('meta[name="csrf-token"]').content = csrfHash;
 
-                    // Restyle the selected button with correct colour
-                    const statusColour = {
-                        conforme:     'btn-success',
-                        partiel:      'btn-warning',
-                        non_conforme: 'btn-danger',
-                    };
+                    // Style the selected button as neutral primary (no score colour)
                     const chosen = card.querySelector(`.quiz-choice[data-choice-id="${choiceId}"]`);
                     if (chosen) {
-                        chosen.classList.remove('btn-secondary', 'btn-outline-secondary');
-                        chosen.classList.add(statusColour[data.answer.status] || 'btn-secondary');
-                        chosen.dataset.scorePct = data.answer.score_pct;
+                        chosen.classList.remove('btn-secondary', 'btn-outline-secondary', 'btn-success', 'btn-warning', 'btn-danger');
+                        chosen.classList.add('btn-primary');
                     }
 
-                    // Update card border
+                    // Neutral card indicator (answered = blue left border)
                     card.classList.remove('border-success', 'border-warning', 'border-danger');
-                    if (data.answer.status === 'conforme')     card.classList.add('border-success');
-                    else if (data.answer.status === 'partiel') card.classList.add('border-warning');
-                    else                                       card.classList.add('border-danger');
+                    card.classList.add('border-start', 'border-3', 'border-primary', 'bg-primary', 'bg-opacity-10');
 
                     // Global progress
                     updateStickyBar(data.answered, data.total);
@@ -467,8 +448,8 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
     // Re-run domain badges init
     document.querySelectorAll('.quiz-card').forEach(card => {
         const domainId = card.dataset.domainId;
-        // Store score_pct on buttons that are already selected
-        const selected = card.querySelector('.quiz-choice.btn-success, .quiz-choice.btn-warning, .quiz-choice.btn-danger');
+        // Restore justification/other_text areas if the saved answer requires them
+        const selected = card.querySelector('.quiz-choice.btn-primary');
         if (selected) {
             // Show justification/other_text if saved
             const jusArea   = card.querySelector('.justification-area');
