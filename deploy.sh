@@ -9,6 +9,7 @@ APP_DIR="/home/persomy.com/checkiso.persomy.com"
 cd "$APP_DIR"
 
 echo "=== [1/5] Git pull ==="
+git checkout -- .        # discard any local changes (e.g. line-ending diffs)
 git pull origin main
 
 echo "=== [2/5] CI4 migrations ==="
