@@ -232,7 +232,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= lang('Gap.cancel_btn') ?></button>
                 <button type="button" id="confirmSubmitBtn" class="btn btn-success">
-                    <i class="bi bi-send me-1"></i><?= lang('Gap.confirm_submit_btn') ?>
+                    <i class="bi bi-send me-1"></i><?= esc(lang('Gap.confirm_submit_btn')) ?>
                 </button>
             </div>
         </div>
@@ -242,9 +242,17 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
 <!-- ── JavaScript ────────────────────────────────────────────────────────── -->
 <script>
 (function () {
-    const CSRF_NAME = '<?= csrf_token() ?>';
-    let   csrfHash  = '<?= csrf_hash() ?>';
+    const CSRF_NAME  = <?= json_encode(csrf_token()) ?>;
+    let   csrfHash   = <?= json_encode(csrf_hash()) ?>;
     const VERSION_ID = <?= (int)$versionId ?>;
+
+    // i18n strings (json_encode escapes apostrophes and special chars safely)
+    const i18n = {
+        submitting:        <?= json_encode(lang('Gap.submitting')) ?>,
+        submit_error:      <?= json_encode(lang('Gap.submit_error')) ?>,
+        network_error:     <?= json_encode(lang('Gap.network_error')) ?>,
+        confirm_submit_btn:<?= json_encode(lang('Gap.confirm_submit_btn')) ?>,
+    };
 
     // ── Track current global progress ──────────────────────────────────────
     let gAnswered = <?= $answered ?>;
@@ -431,7 +439,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
 
     document.getElementById('confirmSubmitBtn').addEventListener('click', async function () {
         this.disabled = true;
-        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= lang('Gap.submitting') ?>';
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>' + i18n.submitting;
 
         const body = new URLSearchParams({ [CSRF_NAME]: csrfHash });
         try {
@@ -444,12 +452,12 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
             if (data.ok && data.redirect_to) {
                 window.location.href = data.redirect_to;
             } else {
-                alert(data.message || '<?= lang('Gap.submit_error') ?>');
+                alert(data.message || i18n.submit_error);
                 this.disabled = false;
-                this.innerHTML = '<i class="bi bi-send me-1"></i><?= lang('Gap.confirm_submit_btn') ?>';
+                this.innerHTML = '<i class="bi bi-send me-1"></i>' + i18n.confirm_submit_btn;
             }
         } catch (e) {
-            alert('<?= lang('Gap.network_error') ?>');
+            alert(i18n.network_error);
             this.disabled = false;
         }
     });
