@@ -53,6 +53,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->post('/gap/(:num)/answer',              'Web\GapController::saveAnswer/$1');
     $routes->post('/gap/(:num)/submit',              'Web\GapController::submit/$1');
     $routes->get('/gap/(:num)/summary',              'Web\GapController::summary/$1');
+    $routes->get('/gap/(:num)/export-pdf',           'Web\PdfController::gapReport/$1');
 
     // Action Plan — any member can manage
     $routes->get('/action-plan',                     'Web\ActionPlanController::index');

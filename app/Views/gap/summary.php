@@ -48,6 +48,9 @@ foreach ($domainBreakdown as $d) {
             <i class="bi bi-lock-fill"></i> <?= lang('Gap.evaluation_submitted') ?>
         </span>
         <?php endif; ?>
+        <a href="<?= site_url('gap/' . $versionId . '/export-pdf') ?>" class="btn btn-danger btn-sm" target="_blank">
+            <i class="bi bi-file-earmark-pdf me-1"></i>Exporter PDF
+        </a>
         <a href="<?= site_url('action-plan/create?session_id=' . $gs['id']) ?>" class="btn btn-outline-primary btn-sm">
             🎯 <?= lang('ActionPlan.btn_create_from_gap') ?>
         </a>
