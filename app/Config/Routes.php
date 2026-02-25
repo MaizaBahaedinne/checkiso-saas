@@ -32,6 +32,12 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     // Org — any member can view
     $routes->get('/org/members',          'Web\OrgController::members');
 
+    // ISO Catalogue — any member can browse
+    $routes->get('/catalog',                         'Web\CatalogController::index');
+    $routes->get('/catalog/(:num)',                  'Web\CatalogController::show/$1');
+    $routes->post('/catalog/(:num)/subscribe',       'Web\CatalogController::subscribe/$1');
+    $routes->post('/catalog/(:num)/unsubscribe',     'Web\CatalogController::unsubscribe/$1');
+
     // -----------------------------------------------------------------------
     // Admin-only routes (role: org.admin)
     // -----------------------------------------------------------------------

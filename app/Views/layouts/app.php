@@ -34,6 +34,9 @@
         <a href="<?= site_url('org/members') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/members') ? 'active' : '' ?>">
             👥 Members
         </a>
+        <a href="<?= site_url('catalog') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'catalog') ? 'active' : '' ?>">
+            📚 Standards
+        </a>
         <?php if (session()->get('role_code') === 'org.admin'): ?>
         <a href="<?= site_url('org/requests') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/requests') ? 'active' : '' ?>">
             📋 Join requests
