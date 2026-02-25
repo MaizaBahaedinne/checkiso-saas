@@ -95,19 +95,19 @@ $routes->post('/invite/(:hex)', 'Web\InvitationController::acceptPost/$1');
 // ---------------------------------------------------------------------------
 $routes->group('admin', ['filter' => 'admin'], static function ($routes): void {
     $routes->get('/',                                   'Web\AdminController::index');
-    $routes->get('/tenants',                            'Web\AdminController::tenants');
-    $routes->post('/tenants/(:num)/toggle',             'Web\AdminController::tenantToggle/$1');
-    $routes->get('/users',                              'Web\AdminController::users');
-    $routes->post('/users/(:num)/toggle',               'Web\AdminController::userToggle/$1');
+    $routes->get('tenants',                             'Web\AdminController::tenants');
+    $routes->post('tenants/(:num)/toggle',              'Web\AdminController::tenantToggle/$1');
+    $routes->get('users',                               'Web\AdminController::users');
+    $routes->post('users/(:num)/toggle',                'Web\AdminController::userToggle/$1');
 
     // ISO Catalogue management
-    $routes->get('/catalog',                  'Web\AdminController::catalog');
-    $routes->get('/catalog/(:num)',            'Web\AdminController::catalogShow/$1');
-    $routes->post('/catalog/domain/(:num)',    'Web\AdminController::catalogDomainSave/$1');
-    $routes->post('/catalog/control/(:num)',   'Web\AdminController::catalogControlSave/$1');
+    $routes->get('catalog',                  'Web\AdminController::catalog');
+    $routes->get('catalog/(:num)',            'Web\AdminController::catalogShow/$1');
+    $routes->post('catalog/domain/(:num)',    'Web\AdminController::catalogDomainSave/$1');
+    $routes->post('catalog/control/(:num)',   'Web\AdminController::catalogControlSave/$1');
 
     // Gap Analysis oversight
-    $routes->get('/gap',                      'Web\AdminController::gapSessions');
-    $routes->get('/gap/(:num)',               'Web\AdminController::gapSessionDetail/$1');
-    $routes->post('/gap/reset/(:num)',         'Web\AdminController::gapSessionReset/$1');
+    $routes->get('gap',                      'Web\AdminController::gapSessions');
+    $routes->get('gap/(:num)',               'Web\AdminController::gapSessionDetail/$1');
+    $routes->post('gap/reset/(:num)',         'Web\AdminController::gapSessionReset/$1');
 });
