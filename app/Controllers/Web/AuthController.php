@@ -64,13 +64,22 @@ class AuthController extends BaseController
             ? $this->membershipModel->getRoleCode($membership['id'])
             : null;
 
+        // Check platform admin status
+        $db = \Config\Database::connect();
+        $isPlatformAdmin = (bool) $db->table('user_platform_roles upr')
+            ->join('roles r', 'r.id = upr.role_id')
+            ->where('upr.user_id', $user['id'])
+            ->where('r.code', 'platform.admin')
+            ->countAllResults();
+
         session()->set([
-            'user_id'       => $user['id'],
-            'user_email'    => $user['email'],
-            'user_name'     => UserModel::fullName($user),
-            'tenant_id'     => $membership['tenant_id'] ?? null,
-            'membership_id' => $membership['id'] ?? null,
-            'role_code'     => $roleCode,
+            'user_id'            => $user['id'],
+            'user_email'         => $user['email'],
+            'user_name'          => UserModel::fullName($user),
+            'tenant_id'          => $membership['tenant_id'] ?? null,
+            'membership_id'      => $membership['id'] ?? null,
+            'role_code'          => $roleCode,
+            'is_platform_admin'  => $isPlatformAdmin,
         ]);
 
         $this->userModel->update($user['id'], ['last_login_at' => date('Y-m-d H:i:s')]);

@@ -58,3 +58,14 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
 // Public invite acceptance (no auth required — handled inside the controller)
 $routes->get('/invite/(:hex)',  'Web\InvitationController::accept/$1');
 $routes->post('/invite/(:hex)', 'Web\InvitationController::acceptPost/$1');
+
+// ---------------------------------------------------------------------------
+// Platform admin — requires is_platform_admin session flag (AdminFilter)
+// ---------------------------------------------------------------------------
+$routes->group('admin', ['filter' => 'admin'], static function ($routes): void {
+    $routes->get('/',                           'Web\AdminController::index');
+    $routes->get('/tenants',                    'Web\AdminController::tenants');
+    $routes->post('/tenants/(:num)/toggle',     'Web\AdminController::tenantToggle/$1');
+    $routes->get('/users',                      'Web\AdminController::users');
+    $routes->post('/users/(:num)/toggle',       'Web\AdminController::userToggle/$1');
+});

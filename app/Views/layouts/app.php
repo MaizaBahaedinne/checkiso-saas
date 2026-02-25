@@ -42,6 +42,12 @@
             ⚙️ Settings
         </a>
         <?php endif ?>
+        <?php if (session()->get('is_platform_admin')): ?>
+        <div class="text-uppercase text-muted px-3 mt-3 mb-1" style="font-size:.68rem;letter-spacing:.07em;">Platform</div>
+        <a href="<?= site_url('admin') ?>" class="nav-link px-3 py-2 text-danger <?= str_starts_with(uri_string(), 'admin') ? 'active' : '' ?>">
+            🛡️ Admin panel
+        </a>
+        <?php endif ?>
     </aside>
 
     <main class="p-4">

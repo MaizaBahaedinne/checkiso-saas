@@ -3,6 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
+use App\Filters\AdminFilter;
 use App\Filters\AuthFilter;
 use App\Filters\RoleFilter;
 use CodeIgniter\Filters\CSRF;
@@ -21,6 +22,7 @@ class Filters extends BaseConfig
      *                                                     or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
+        'admin'         => AdminFilter::class,
         'auth'          => AuthFilter::class,
         'role'          => RoleFilter::class,
         'csrf'          => CSRF::class,
