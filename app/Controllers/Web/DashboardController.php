@@ -5,6 +5,7 @@ namespace App\Controllers\Web;
 use App\Controllers\BaseController;
 use App\Models\StandardVersionModel;
 use App\Models\GapSessionModel;
+use App\Models\ActionPlanModel;
 
 class DashboardController extends BaseController
 {
@@ -52,6 +53,10 @@ class DashboardController extends BaseController
             ->where('ga.is_manual_review', 1)
             ->countAllResults();
 
+        // ── Action plan stats ──────────────────────────────────────────────
+        $actionPlanModel = new ActionPlanModel();
+        $actionStats     = $actionPlanModel->statsForTenant($tenantId);
+
         // ── Summary counters ───────────────────────────────────────────────
         $submittedCount = count(array_filter($sessions, fn($s) => $s['status'] === 'submitted'));
         $inProgressCount = count(array_filter($sessions, fn($s) => $s['status'] === 'draft' && (int)$s['answered_controls'] > 0));
@@ -64,6 +69,7 @@ class DashboardController extends BaseController
             'totalControls'  => $totalControls,
             'submittedCount' => $submittedCount,
             'inProgressCount'=> $inProgressCount,
+            'actionStats'    => $actionStats,
         ]);
     }
 }

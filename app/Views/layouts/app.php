@@ -56,6 +56,9 @@
         <a href="<?= site_url('gap') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'gap') ? 'active' : '' ?>">
             📊 <?= lang('Nav.gap_analysis') ?>
         </a>
+        <a href="<?= site_url('action-plan') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'action-plan') ? 'active' : '' ?>">
+            🎯 <?= lang('Nav.action_plan') ?>
+        </a>
         <?php if (session()->get('role_code') === 'org.admin'): ?>
         <a href="<?= site_url('org/requests') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/requests') ? 'active' : '' ?>">
             📋 <?= lang('Nav.join_requests') ?>

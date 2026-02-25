@@ -54,6 +54,15 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->post('/gap/(:num)/submit',              'Web\GapController::submit/$1');
     $routes->get('/gap/(:num)/summary',              'Web\GapController::summary/$1');
 
+    // Action Plan — any member can manage
+    $routes->get('/action-plan',                     'Web\ActionPlanController::index');
+    $routes->get('/action-plan/create',              'Web\ActionPlanController::create');
+    $routes->post('/action-plan',                    'Web\ActionPlanController::store');
+    $routes->get('/action-plan/(:num)/edit',         'Web\ActionPlanController::edit/$1');
+    $routes->post('/action-plan/(:num)/update',      'Web\ActionPlanController::update/$1');
+    $routes->post('/action-plan/(:num)/status',      'Web\ActionPlanController::updateStatus/$1');
+    $routes->post('/action-plan/(:num)/delete',      'Web\ActionPlanController::delete/$1');
+
     // -----------------------------------------------------------------------
     // Admin-only routes (role: org.admin)
     // -----------------------------------------------------------------------

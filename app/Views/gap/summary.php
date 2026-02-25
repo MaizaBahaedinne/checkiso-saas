@@ -48,6 +48,9 @@ foreach ($domainBreakdown as $d) {
             <i class="bi bi-lock-fill"></i> <?= lang('Gap.evaluation_submitted') ?>
         </span>
         <?php endif; ?>
+        <a href="<?= site_url('action-plan/create?session_id=' . $gs['id']) ?>" class="btn btn-outline-primary btn-sm">
+            🎯 <?= lang('ActionPlan.btn_create_from_gap') ?>
+        </a>
     </div>
 </div>
 
@@ -170,6 +173,10 @@ foreach ($domainBreakdown as $d) {
                     <?php endif; ?>
                 </div>
                 <span class="badge bg-info-subtle text-info border border-info-subtle"><?= lang('Gap.manual_col') ?></span>
+                <a href="<?= site_url('action-plan/create?session_id=' . $gs['id'] . '&control_id=' . $m['control_id']) ?>"
+                   class="btn btn-outline-primary btn-sm py-0 px-2" style="font-size:.72rem" title="<?= lang('ActionPlan.btn_create_from_gap') ?>">
+                    🎯
+                </a>
             </div>
         </div>
         <?php endforeach; ?>

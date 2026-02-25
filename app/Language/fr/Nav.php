@@ -13,4 +13,5 @@ return [
     'logout'         => 'Déconnexion',
     'switch_lang'    => 'Langue',
     'profile'        => 'Mon profil',
+    'action_plan'    => 'Plans d\'action',
 ];

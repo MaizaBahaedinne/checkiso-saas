@@ -99,6 +99,46 @@ $hasManual   = $manualCount > 0;
 
 </div>
 
+<!-- ── Action plans KPI row ───────────────────────────────────────────────── -->
+<?php if ($actionStats['total'] > 0):
+    $apPct = round($actionStats['done'] / $actionStats['total'] * 100);
+?>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body py-3">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-4 flex-wrap">
+                <span class="fw-semibold text-muted small text-uppercase" style="letter-spacing:.06em">
+                    🎯 <?= lang('ActionPlan.title') ?>
+                </span>
+                <span>
+                    <strong class="text-dark"><?= $actionStats['total'] ?></strong>
+                    <span class="text-muted small ms-1"><?= lang('ActionPlan.stat_total') ?></span>
+                </span>
+                <span class="text-success">
+                    <strong><?= $actionStats['done'] ?></strong>
+                    <span class="text-muted small ms-1"><?= lang('ActionPlan.stat_done') ?></span>
+                </span>
+                <?php if ($actionStats['overdue'] > 0): ?>
+                <span class="text-danger">
+                    <strong><?= $actionStats['overdue'] ?></strong>
+                    <span class="text-muted small ms-1"><?= lang('ActionPlan.stat_overdue') ?></span>
+                </span>
+                <?php endif ?>
+                <div class="d-flex align-items-center gap-2" style="min-width:160px">
+                    <div class="progress flex-grow-1" style="height:8px">
+                        <div class="progress-bar bg-success" style="width:<?= $apPct ?>%"></div>
+                    </div>
+                    <span class="text-muted small"><?= $apPct ?>%</span>
+                </div>
+            </div>
+            <a href="<?= site_url('action-plan') ?>" class="btn btn-outline-primary btn-sm">
+                <?= lang('ActionPlan.title') ?> →
+            </a>
+        </div>
+    </div>
+</div>
+<?php endif ?>
+
 <!-- ── Alert : revues manuelles en attente ───────────────────────────────── -->
 <?php if ($hasManual): ?>
 <div class="alert alert-warning d-flex align-items-center gap-3 mb-4">
