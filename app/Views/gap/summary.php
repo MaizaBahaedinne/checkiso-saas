@@ -125,7 +125,7 @@ foreach ($domainBreakdown as $d) {
                 <tr>
                     <td>
                         <span class="badge bg-primary me-2 font-monospace"><?= esc($d['domain_code']) ?></span>
-                        <span class="fw-medium"><?= esc($d['domain_name']) ?></span>
+                        <span class="fw-medium"><?= esc($d['display_name']) ?></span>
                     </td>
                     <td class="text-center"><?= (int)$d['answered'] ?></td>
                     <td class="text-center text-info fw-semibold"><?= (int)$d['manual_review'] ?: '—' ?></td>
@@ -160,7 +160,7 @@ foreach ($domainBreakdown as $d) {
             <div class="d-flex align-items-start gap-3">
                 <span class="badge bg-secondary font-monospace mt-1"><?= esc($m['control_code']) ?></span>
                 <div class="flex-grow-1">
-                    <p class="mb-1 fw-semibold small"><?= esc($m['control_title']) ?></p>
+                    <p class="mb-1 fw-semibold small"><?= esc($m['display_title']) ?></p>
                     <?php if ($m['other_text']): ?>
                     <p class="mb-0 text-muted small"><i class="bi bi-chat-left-text me-1"></i><?= nl2br(esc($m['other_text'])) ?></p>
                     <?php elseif ($m['justification']): ?>

@@ -70,7 +70,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                     data-bs-target="#domain-<?= $domain['id'] ?>"
                     aria-expanded="<?= $di === 0 ? 'true' : 'false' ?>">
                 <span class="badge bg-primary me-3 font-monospace"><?= esc($domain['code']) ?></span>
-                <?= esc($domain['name']) ?>
+                <?= esc($domain['display_name']) ?>
                 <span class="ms-auto me-3 badge bg-secondary domain-progress-badge"
                       data-domain-id="<?= $domain['id'] ?>"></span>
             </button>
@@ -84,7 +84,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                 <!-- Clause header -->
                 <div class="px-4 py-2 border-bottom bg-light d-flex align-items-center gap-2">
                     <code class="text-secondary"><?= esc($clause['code']) ?></code>
-                    <span class="fw-medium small"><?= esc($clause['title']) ?></span>
+                    <span class="fw-medium small"><?= esc($clause['display_title']) ?></span>
                 </div>
 
                 <!-- Controls / quiz cards -->
@@ -110,7 +110,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                     <!-- Control title + code -->
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <span class="badge bg-secondary font-monospace" style="font-size:.72rem"><?= esc($control['code']) ?></span>
-                        <span class="fw-semibold"><?= esc($control['title']) ?></span>
+                        <span class="fw-semibold"><?= esc($control['display_title']) ?></span>
                     </div>
 
 <?php if ($qa): ?>

@@ -85,6 +85,21 @@ class GapController extends BaseController
         }
         unset($domain);
 
+        // Locale-aware display names
+        $locale = session()->get('lang') ?? 'fr';
+        foreach ($domains as &$domain) {
+            $domain['display_name'] = ($locale === 'fr' && !empty($domain['name_fr'])) ? $domain['name_fr'] : $domain['name'];
+            foreach ($domain['clauses'] as &$clause) {
+                $clause['display_title'] = ($locale === 'fr' && !empty($clause['title_fr'])) ? $clause['title_fr'] : $clause['title'];
+                foreach ($clause['controls'] as &$control) {
+                    $control['display_title'] = ($locale === 'fr' && !empty($control['title_fr'])) ? $control['title_fr'] : $control['title'];
+                }
+                unset($control);
+            }
+            unset($clause);
+        }
+        unset($domain);
+
         // Get or create the gap session
         $gapSession = $this->sessionModel->getOrCreate($tenantId, $versionId);
 
@@ -236,6 +251,17 @@ class GapController extends BaseController
         $sv              = $this->svModel->getWithStandard($versionId);
         $domainBreakdown = $this->answerModel->domainBreakdown($gapSession['id']);
         $manualItems     = $this->answerModel->manualReviewItems($gapSession['id']);
+
+        // Locale-aware display names
+        $locale = session()->get('lang') ?? 'fr';
+        foreach ($domainBreakdown as &$d) {
+            $d['display_name'] = ($locale === 'fr' && !empty($d['domain_name_fr'])) ? $d['domain_name_fr'] : $d['domain_name'];
+        }
+        unset($d);
+        foreach ($manualItems as &$m) {
+            $m['display_title'] = ($locale === 'fr' && !empty($m['control_title_fr'])) ? $m['control_title_fr'] : $m['control_title'];
+        }
+        unset($m);
 
         return view('gap/summary', [
             'sv'              => $sv,

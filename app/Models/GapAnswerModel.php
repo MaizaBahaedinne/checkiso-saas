@@ -96,9 +96,10 @@ class GapAnswerModel extends Model
     {
         return $this->db->table('gap_answers ga')
             ->select([
-                'd.id   AS domain_id',
-                'd.name AS domain_name',
-                'd.code AS domain_code',
+                'd.id      AS domain_id',
+                'd.name    AS domain_name',
+                'd.name_fr AS domain_name_fr',
+                'd.code    AS domain_code',
                 'COUNT(c.id)             AS total',
                 'COUNT(ga.id)            AS answered',
                 'SUM(ga.is_manual_review) AS manual_review',
@@ -121,8 +122,9 @@ class GapAnswerModel extends Model
         return $this->db->table('gap_answers ga')
             ->select([
                 'ga.*',
-                'c.code  AS control_code',
-                'c.title AS control_title',
+                'c.code     AS control_code',
+                'c.title    AS control_title',
+                'c.title_fr AS control_title_fr',
             ])
             ->join('controls c', 'c.id = ga.control_id')
             ->where('ga.session_id', $sessionId)
