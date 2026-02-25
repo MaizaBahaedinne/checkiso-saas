@@ -162,7 +162,7 @@ class AdminController extends BaseController
             ->join('domains d',   'd.standard_version_id = sv.id', 'left')
             ->join('clauses cl',  'cl.domain_id = d.id', 'left')
             ->join('controls c',  'c.clause_id = cl.id', 'left')
-            ->join('tenant_standard_versions sub', 'sub.standard_version_id = sv.id', 'left')
+            ->join('tenant_standards sub', 'sub.standard_version_id = sv.id', 'left')
             ->groupBy('s.id, sv.id')
             ->orderBy('s.code ASC, sv.version ASC')
             ->get()->getResultArray();
