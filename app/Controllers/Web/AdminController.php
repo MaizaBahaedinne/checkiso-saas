@@ -336,7 +336,8 @@ class AdminController extends BaseController
                       c.title AS control_title, c.title_fr AS control_title_fr,
                       d.name  AS domain_name,   d.name_fr  AS domain_name_fr,
                       d.code  AS domain_code,
-                      cc.label AS choice_label')
+                      IFNULL(cc.label,     "—")  AS choice_label,
+                      IFNULL(cc.is_trap,    0)   AS is_trap')
             ->join('controls c',          'c.id  = ga.control_id')
             ->join('clauses cl',          'cl.id = c.clause_id')
             ->join('domains d',           'd.id  = cl.domain_id')
