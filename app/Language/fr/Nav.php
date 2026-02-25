@@ -12,4 +12,5 @@ return [
     'admin_panel'    => 'Administration',
     'logout'         => 'Déconnexion',
     'switch_lang'    => 'Langue',
+    'profile'        => 'Mon profil',
 ];

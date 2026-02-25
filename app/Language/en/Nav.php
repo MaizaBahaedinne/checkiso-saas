@@ -12,4 +12,5 @@ return [
     'admin_panel'    => 'Admin panel',
     'logout'         => 'Logout',
     'switch_lang'    => 'Language',
+    'profile'        => 'My profile',
 ];

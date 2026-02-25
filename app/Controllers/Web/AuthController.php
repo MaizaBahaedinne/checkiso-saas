@@ -80,6 +80,7 @@ class AuthController extends BaseController
             'membership_id'      => $membership['id'] ?? null,
             'role_code'          => $roleCode,
             'is_platform_admin'  => $isPlatformAdmin,
+            'lang'               => $user['lang_preference'] ?? 'fr',
         ]);
 
         $this->userModel->update($user['id'], ['last_login_at' => date('Y-m-d H:i:s')]);

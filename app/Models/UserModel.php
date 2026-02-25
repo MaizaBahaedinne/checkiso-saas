@@ -18,6 +18,7 @@ class UserModel extends Model
         'first_name',
         'last_name',
         'status',
+        'lang_preference',
         'last_login_at',
     ];
 

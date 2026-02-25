@@ -25,6 +25,12 @@ $routes->get('/logout',   'Web\AuthController::logout');
 $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->get('/dashboard', 'Web\DashboardController::index');
 
+    // Profile — any logged-in user
+    $routes->get('/profile',           'Web\ProfileController::index');
+    $routes->post('/profile/info',     'Web\ProfileController::updateInfo');
+    $routes->post('/profile/password', 'Web\ProfileController::updatePassword');
+    $routes->post('/profile/lang',     'Web\ProfileController::updateLang');
+
     // Onboarding (logged in but no tenant yet)
     $routes->get('/onboarding',           'Web\OnboardingController::index');
     $routes->get('/onboarding/search',    'Web\OnboardingController::search');

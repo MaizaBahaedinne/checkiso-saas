@@ -22,7 +22,9 @@
     <a class="navbar-brand fw-bold" href="/dashboard">CheckISO</a>
     <div class="d-flex align-items-center gap-3">
         <span class="text-white-50 small"><?= esc(session()->get('user_email')) ?></span>
-        <span class="text-white fw-semibold small"><?= esc(session()->get('user_name')) ?></span>
+        <a href="<?= site_url('profile') ?>" class="text-white fw-semibold small text-decoration-none" title="<?= lang('Nav.profile') ?>">
+            <?= esc(session()->get('user_name')) ?>
+        </a>
         <!-- Language switcher -->
         <div class="d-flex gap-1">
             <a href="<?= site_url('lang/fr') ?>"
@@ -40,6 +42,9 @@
     <aside class="sidebar p-3 d-flex flex-column gap-1">
         <a href="<?= site_url('dashboard') ?>" class="nav-link px-3 py-2 <?= uri_string() === 'dashboard' ? 'active' : '' ?>">
             🏠 <?= lang('Nav.dashboard') ?>
+        </a>
+        <a href="<?= site_url('profile') ?>" class="nav-link px-3 py-2 <?= uri_string() === 'profile' ? 'active' : '' ?>">
+            👤 <?= lang('Nav.profile') ?>
         </a>
         <div class="text-uppercase text-muted px-3 mt-3 mb-1" style="font-size:.68rem;letter-spacing:.07em;"><?= lang('Nav.organisation') ?></div>
         <a href="<?= site_url('org/members') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/members') ? 'active' : '' ?>">

@@ -14,6 +14,12 @@ class LangController extends BaseController
     {
         if (in_array($locale, ['fr', 'en'])) {
             session()->set('lang', $locale);
+
+            // Persist to DB if the user is authenticated
+            if ($userId = session()->get('user_id')) {
+                $userModel = new \App\Models\UserModel();
+                $userModel->update($userId, ['lang_preference' => $locale]);
+            }
         }
 
         // Redirect back to the referring page, or to dashboard as fallback
