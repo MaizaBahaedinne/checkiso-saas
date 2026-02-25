@@ -25,14 +25,13 @@ class ReseedControlQuestionsInFrench extends Migration
         $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
 
         // ── Step 2 : re-run the French seed from migration 000002 ──────────
-        // We instantiate SeedControlQuestions without triggering its
-        // constructor (which would open a second DB connection) and inject
-        // our current $this->db via reflection.
-        $seederClass = SeedControlQuestions::class;
-        $reflection  = new \ReflectionClass($seederClass);
-        $seeder      = $reflection->newInstanceWithoutConstructor();
+        // Migrations are not autoloaded, so we require_once the file first.
+        require_once APPPATH . 'Database/Migrations/2026-02-25-000002_SeedControlQuestions.php';
 
-        // Inject the shared DB connection (property lives on the parent class)
+        $reflection = new \ReflectionClass(\App\Database\Migrations\SeedControlQuestions::class);
+        $seeder     = $reflection->newInstanceWithoutConstructor();
+
+        // Inject the shared DB connection (property lives on the parent Migration class)
         $dbProp = $reflection->getParentClass()->getProperty('db');
         $dbProp->setAccessible(true);
         $dbProp->setValue($seeder, $this->db);
