@@ -79,9 +79,20 @@ $routes->post('/invite/(:hex)', 'Web\InvitationController::acceptPost/$1');
 // Platform admin — requires is_platform_admin session flag (AdminFilter)
 // ---------------------------------------------------------------------------
 $routes->group('admin', ['filter' => 'admin'], static function ($routes): void {
-    $routes->get('/',                           'Web\AdminController::index');
-    $routes->get('/tenants',                    'Web\AdminController::tenants');
-    $routes->post('/tenants/(:num)/toggle',     'Web\AdminController::tenantToggle/$1');
-    $routes->get('/users',                      'Web\AdminController::users');
-    $routes->post('/users/(:num)/toggle',       'Web\AdminController::userToggle/$1');
+    $routes->get('/',                                   'Web\AdminController::index');
+    $routes->get('/tenants',                            'Web\AdminController::tenants');
+    $routes->post('/tenants/(:num)/toggle',             'Web\AdminController::tenantToggle/$1');
+    $routes->get('/users',                              'Web\AdminController::users');
+    $routes->post('/users/(:num)/toggle',               'Web\AdminController::userToggle/$1');
+
+    // ISO Catalogue management
+    $routes->get('/catalog',                            'Web\AdminController::catalog');
+    $routes->get('/catalog/(:num)',                     'Web\AdminController::catalogShow/$1');
+    $routes->post('/catalog/control/(:num)/save',       'Web\AdminController::catalogControlSave/$1');
+    $routes->post('/catalog/domain/(:num)/save',        'Web\AdminController::catalogDomainSave/$1');
+
+    // Gap Analysis oversight
+    $routes->get('/gap',                                'Web\AdminController::gapSessions');
+    $routes->get('/gap/(:num)',                         'Web\AdminController::gapSessionDetail/$1');
+    $routes->post('/gap/(:num)/reset',                  'Web\AdminController::gapSessionReset/$1');
 });

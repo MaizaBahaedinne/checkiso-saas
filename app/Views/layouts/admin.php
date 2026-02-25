@@ -44,6 +44,13 @@
         <a href="<?= site_url('admin/users') ?>" class="nav-link <?= str_starts_with(uri_string(), 'admin/users') ? 'active' : '' ?>">
             👤 Users
         </a>
+        <div class="section-label mt-2">ISO Content</div>
+        <a href="<?= site_url('admin/catalog') ?>" class="nav-link <?= str_starts_with(uri_string(), 'admin/catalog') ? 'active' : '' ?>">
+            📚 Catalogue
+        </a>
+        <a href="<?= site_url('admin/gap') ?>" class="nav-link <?= str_starts_with(uri_string(), 'admin/gap') ? 'active' : '' ?>">
+            🔍 Gap Sessions
+        </a>
     </aside>
 
     <main class="p-4">
