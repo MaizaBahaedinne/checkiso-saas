@@ -151,7 +151,7 @@
 
 <script>
 function confirmReset(sessionId, tenantName) {
-    document.getElementById('resetForm').action = '<?= site_url('admin/gap') ?>/' + sessionId + '/reset';
+    document.getElementById('resetForm').action = '<?= site_url('admin/gap/reset') ?>/' + sessionId;
     document.getElementById('resetTenantName').textContent = tenantName;
     new bootstrap.Modal(document.getElementById('resetModal')).show();
 }

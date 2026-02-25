@@ -44,7 +44,7 @@
                     <i class="bi bi-pencil me-1"></i>Modifier le domaine
                 </div>
                 <div class="card-body">
-                    <form method="post" action="<?= site_url('admin/catalog/domain/' . $domain['id'] . '/save') ?>">
+                    <form method="post" action="<?= site_url('admin/catalog/domain/' . $domain['id']) ?>">
                         <?= csrf_field() ?>
                         <div class="row g-2">
                             <div class="col-md-6">
@@ -158,7 +158,7 @@ const baseUrl = '<?= site_url('admin/catalog/control') ?>';
 function openEditModal(controlId, titleEn, titleFr) {
     document.getElementById('editTitleEn').value = titleEn;
     document.getElementById('editTitleFr').value = titleFr;
-    document.getElementById('editControlForm').action = baseUrl + '/' + controlId + '/save';
+    document.getElementById('editControlForm').action = baseUrl + '/' + controlId;
     new bootstrap.Modal(document.getElementById('editControlModal')).show();
 }
 </script>

@@ -86,13 +86,13 @@ $routes->group('admin', ['filter' => 'admin'], static function ($routes): void {
     $routes->post('/users/(:num)/toggle',               'Web\AdminController::userToggle/$1');
 
     // ISO Catalogue management
-    $routes->get('/catalog',                            'Web\AdminController::catalog');
-    $routes->get('/catalog/(:num)',                     'Web\AdminController::catalogShow/$1');
-    $routes->post('/catalog/control/(:num)/save',       'Web\AdminController::catalogControlSave/$1');
-    $routes->post('/catalog/domain/(:num)/save',        'Web\AdminController::catalogDomainSave/$1');
+    $routes->get('/catalog',                  'Web\AdminController::catalog');
+    $routes->get('/catalog/(:num)',            'Web\AdminController::catalogShow/$1');
+    $routes->post('/catalog/domain/(:num)',    'Web\AdminController::catalogDomainSave/$1');
+    $routes->post('/catalog/control/(:num)',   'Web\AdminController::catalogControlSave/$1');
 
     // Gap Analysis oversight
-    $routes->get('/gap',                                'Web\AdminController::gapSessions');
-    $routes->get('/gap/(:num)',                         'Web\AdminController::gapSessionDetail/$1');
-    $routes->post('/gap/(:num)/reset',                  'Web\AdminController::gapSessionReset/$1');
+    $routes->get('/gap',                      'Web\AdminController::gapSessions');
+    $routes->get('/gap/(:num)',               'Web\AdminController::gapSessionDetail/$1');
+    $routes->post('/gap/reset/(:num)',         'Web\AdminController::gapSessionReset/$1');
 });
