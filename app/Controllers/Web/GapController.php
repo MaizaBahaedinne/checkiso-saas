@@ -7,158 +7,241 @@ use App\Models\StandardVersionModel;
 use App\Models\DomainModel;
 use App\Models\ClauseModel;
 use App\Models\ControlModel;
-use App\Models\ControlAssessmentModel;
+use App\Models\ControlQuestionModel;
+use App\Models\GapSessionModel;
+use App\Models\GapAnswerModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class GapController extends BaseController
 {
-    private StandardVersionModel   $svModel;
-    private DomainModel            $domainModel;
-    private ClauseModel            $clauseModel;
-    private ControlModel           $controlModel;
-    private ControlAssessmentModel $assessModel;
+    private StandardVersionModel $svModel;
+    private DomainModel          $domainModel;
+    private ClauseModel          $clauseModel;
+    private ControlModel         $controlModel;
+    private ControlQuestionModel $questionModel;
+    private GapSessionModel      $sessionModel;
+    private GapAnswerModel       $answerModel;
 
     public function __construct()
     {
-        $this->svModel      = new StandardVersionModel();
-        $this->domainModel  = new DomainModel();
-        $this->clauseModel  = new ClauseModel();
-        $this->controlModel = new ControlModel();
-        $this->assessModel  = new ControlAssessmentModel();
+        $this->svModel       = new StandardVersionModel();
+        $this->domainModel   = new DomainModel();
+        $this->clauseModel   = new ClauseModel();
+        $this->controlModel  = new ControlModel();
+        $this->questionModel = new ControlQuestionModel();
+        $this->sessionModel  = new GapSessionModel();
+        $this->answerModel   = new GapAnswerModel();
     }
 
-    // -------------------------------------------------------------------------
-    // GET /gap  — list of subscribed standards with gap progress
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // GET /gap  — list subscribed standards with session progress
+    // =========================================================================
 
     public function index(): string
     {
         $tenantId  = (int) session()->get('tenant_id');
         $standards = $this->svModel->forTenant($tenantId);
 
-        foreach ($standards as &$s) {
-            $s['stats'] = $this->assessModel->getGlobalStats($tenantId, (int) $s['id']);
+        foreach ($standards as &$sv) {
+            $gapSession = $this->sessionModel
+                ->where('tenant_id', $tenantId)
+                ->where('standard_version_id', $sv['id'])
+                ->first();
+
+            $sv['gap_session'] = $gapSession;
         }
-        unset($s);
+        unset($sv);
 
         return view('gap/index', ['standards' => $standards]);
     }
 
-    // -------------------------------------------------------------------------
-    // GET /gap/(:num)  — full assessment form
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // GET /gap/(:num)  — quiz interface (per-domain accordion)
+    // =========================================================================
 
-    public function show(int $versionId)
+    public function show(int $versionId): string
     {
         $tenantId = (int) session()->get('tenant_id');
 
-        $version = $this->svModel->getWithStandard($versionId);
-        if ($version === null) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
+        // Verify subscription
         if (! $this->svModel->isSubscribed($tenantId, $versionId)) {
-            return redirect()->to('/catalog/' . $versionId)
-                ->with('error', "Abonnez-vous d'abord à ce référentiel pour l'évaluer.");
+            return redirect()->to('/gap')->with('error', "Vous n'êtes pas abonné à cette norme.")->send();
         }
 
-        $domains         = $this->domainModel->forVersion($versionId);
-        $clauses         = $this->clauseModel->forVersion($versionId);
-        $controlsByClause = $this->controlModel->forVersion($versionId);
-        $assessments     = $this->assessModel->forTenantVersion($tenantId, $versionId);
-        $globalStats     = $this->assessModel->getGlobalStats($tenantId, $versionId);
-        $domainStats     = $this->assessModel->getStats($tenantId, $versionId);
+        $sv      = $this->svModel->getWithStandard($versionId);
+        $domains = $this->domainModel->forVersion($versionId);
 
-        $clausesByDomain = [];
-        foreach ($clauses as $clause) {
-            $clausesByDomain[$clause['domain_id']][] = $clause;
+        // Build domain → clauses → controls tree, attach quiz questions
+        foreach ($domains as &$domain) {
+            $domain['clauses'] = $this->clauseModel->forDomain($domain['id']);
+            foreach ($domain['clauses'] as &$clause) {
+                $clause['controls'] = $this->controlModel->forClause($clause['id']);
+                foreach ($clause['controls'] as &$control) {
+                    $control['question'] = $this->questionModel->forControl($control['id']);
+                }
+                unset($control);
+            }
+            unset($clause);
         }
+        unset($domain);
 
-        $domainStatsById = [];
-        foreach ($domainStats as $ds) {
-            $domainStatsById[$ds['domain_id']] = $ds;
-        }
+        // Get or create the gap session
+        $gapSession = $this->sessionModel->getOrCreate($tenantId, $versionId);
+
+        // Load existing answers indexed by control_id
+        $answers = $this->answerModel->forSession($gapSession['id']);
 
         return view('gap/show', [
-            'version'          => $version,
-            'versionId'        => $versionId,
-            'domains'          => $domains,
-            'clausesByDomain'  => $clausesByDomain,
-            'controlsByClause' => $controlsByClause,
-            'assessments'      => $assessments,
-            'globalStats'      => $globalStats,
-            'domainStatsById'  => $domainStatsById,
+            'sv'         => $sv,
+            'domains'    => $domains,
+            'gapSession' => $gapSession,
+            'answers'    => $answers,
         ]);
     }
 
-    // -------------------------------------------------------------------------
-    // POST /gap/(:num)/control  — AJAX: save one control assessment
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // POST /gap/(:num)/answer  — AJAX: save one answer (auto-save draft)
+    // =========================================================================
 
-    public function saveControl(int $versionId): ResponseInterface
+    public function saveAnswer(int $versionId): ResponseInterface
     {
         if (! $this->request->isAJAX()) {
-            return $this->response->setStatusCode(403)->setBody('Forbidden');
+            return $this->response->setStatusCode(400)->setJSON(['error' => 'AJAX uniquement.']);
         }
 
         $tenantId  = (int) session()->get('tenant_id');
         $userId    = (int) session()->get('user_id');
+        $controlId = (int) $this->request->getPost('control_id');
+        $choiceId  = (int) $this->request->getPost('choice_id');
+        $justif    = (string) $this->request->getPost('justification');
+        $otherText = (string) $this->request->getPost('other_text');
 
-        $json      = $this->request->getJSON(true);
-        $controlId = (int) ($json['control_id'] ?? 0);
-        $status    = $json['status'] ?? '';
-        $notes     = trim($json['notes'] ?? '');
-
-        if ($controlId === 0) {
-            return $this->response->setJSON(['success' => false, 'message' => 'Contrôle invalide']);
+        // Basic validation
+        if (! $controlId || ! $choiceId) {
+            return $this->response->setStatusCode(422)->setJSON(['error' => 'Paramètres manquants.']);
         }
 
-        if ($status === '') {
-            // Clear the assessment
-            $this->assessModel->remove($tenantId, $controlId);
-        } elseif (in_array($status, ControlAssessmentModel::STATUSES, true)) {
-            $this->assessModel->upsert($tenantId, $versionId, $controlId, $status, $notes, $userId);
-        } else {
-            return $this->response->setJSON(['success' => false, 'message' => 'Statut invalide']);
+        // Load the chosen choice to check requires_justification
+        $choice = db_connect()->table('control_choices')
+            ->where('id', $choiceId)->get()->getRowArray();
+
+        if (! $choice) {
+            return $this->response->setStatusCode(422)->setJSON(['error' => 'Choix invalide.']);
         }
 
-        $globalStats = $this->assessModel->getGlobalStats($tenantId, $versionId);
-        $domainStats = $this->assessModel->getStats($tenantId, $versionId);
+        if ($choice['requires_justification'] && trim($justif) === '' && trim($otherText) === '') {
+            return $this->response->setStatusCode(422)->setJSON([
+                'error' => 'Une justification est requise pour cette réponse.',
+            ]);
+        }
+
+        // Ensure session belongs to this tenant
+        $gapSession = $this->sessionModel
+            ->where('tenant_id', $tenantId)
+            ->where('standard_version_id', $versionId)
+            ->first();
+
+        if (! $gapSession) {
+            $gapSession = $this->sessionModel->getOrCreate($tenantId, $versionId);
+        }
+
+        if ($gapSession['status'] === 'submitted') {
+            return $this->response->setStatusCode(403)->setJSON([
+                'error' => 'Cette évaluation a déjà été soumise et ne peut plus être modifiée.',
+            ]);
+        }
+
+        // Save / update the answer
+        $answer = $this->answerModel->upsert(
+            $gapSession['id'],
+            $controlId,
+            $choiceId,
+            $justif,
+            $otherText,
+            $userId
+        );
+
+        // Recompute progress
+        $gapSession = $this->sessionModel->updateProgress($gapSession['id']);
 
         return $this->response->setJSON([
-            'success'      => true,
-            'global'       => $globalStats,
-            'domain_stats' => $domainStats,
-            'csrf_hash'    => csrf_hash(),
+            'ok'               => true,
+            'answer'           => $answer,
+            'answered'         => (int) $gapSession['answered_controls'],
+            'total'            => (int) $gapSession['total_controls'],
+            'score'            => (float) $gapSession['score'],
+            'is_complete'      => $gapSession['answered_controls'] >= $gapSession['total_controls'],
+            'csrf_token_name'  => csrf_token(),
+            'csrf_hash'        => csrf_hash(),
         ]);
     }
 
-    // -------------------------------------------------------------------------
-    // GET /gap/(:num)/summary  — conformity dashboard
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // POST /gap/(:num)/submit  — finalize the session
+    // =========================================================================
 
-    public function summary(int $versionId)
+    public function submit(int $versionId): ResponseInterface
+    {
+        $tenantId = (int) session()->get('tenant_id');
+        $userId   = (int) session()->get('user_id');
+
+        $gapSession = $this->sessionModel
+            ->where('tenant_id', $tenantId)
+            ->where('standard_version_id', $versionId)
+            ->first();
+
+        if (! $gapSession) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setStatusCode(404)->setJSON(['error' => 'Session introuvable.']);
+            }
+            return redirect()->to('/gap')->with('error', 'Session introuvable.')->send();
+        }
+
+        $result = $this->sessionModel->finalize($gapSession['id'], $userId);
+
+        if (! $result['ok']) {
+            if ($this->request->isAJAX()) {
+                return $this->response->setStatusCode(422)->setJSON($result);
+            }
+            return redirect()->to("/gap/{$versionId}")->with('error', $result['message'])->send();
+        }
+
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'ok'          => true,
+                'redirect_to' => base_url("/gap/{$versionId}/summary"),
+            ]);
+        }
+
+        return redirect()->to("/gap/{$versionId}/summary");
+    }
+
+    // =========================================================================
+    // GET /gap/(:num)/summary  — results summary
+    // =========================================================================
+
+    public function summary(int $versionId): string
     {
         $tenantId = (int) session()->get('tenant_id');
 
-        $version = $this->svModel->getWithStandard($versionId);
-        if ($version === null) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        $gapSession = $this->sessionModel
+            ->where('tenant_id', $tenantId)
+            ->where('standard_version_id', $versionId)
+            ->first();
+
+        if (! $gapSession) {
+            return redirect()->to('/gap')->send();
         }
 
-        if (! $this->svModel->isSubscribed($tenantId, $versionId)) {
-            return redirect()->to('/catalog/' . $versionId)
-                ->with('error', "Abonnez-vous d'abord à ce référentiel.");
-        }
-
-        $globalStats = $this->assessModel->getGlobalStats($tenantId, $versionId);
-        $domainStats = $this->assessModel->getStats($tenantId, $versionId);
+        $sv              = $this->svModel->getWithStandard($versionId);
+        $domainBreakdown = $this->answerModel->domainBreakdown($gapSession['id']);
+        $manualItems     = $this->answerModel->manualReviewItems($gapSession['id']);
 
         return view('gap/summary', [
-            'version'     => $version,
-            'versionId'   => $versionId,
-            'globalStats' => $globalStats,
-            'domainStats' => $domainStats,
+            'sv'              => $sv,
+            'gapSession'      => $gapSession,
+            'domainBreakdown' => $domainBreakdown,
+            'manualItems'     => $manualItems,
         ]);
     }
 }

@@ -41,7 +41,8 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     // Gap Analysis — any member can assess
     $routes->get('/gap',                             'Web\GapController::index');
     $routes->get('/gap/(:num)',                      'Web\GapController::show/$1');
-    $routes->post('/gap/(:num)/control',             'Web\GapController::saveControl/$1');
+    $routes->post('/gap/(:num)/answer',              'Web\GapController::saveAnswer/$1');
+    $routes->post('/gap/(:num)/submit',              'Web\GapController::submit/$1');
     $routes->get('/gap/(:num)/summary',              'Web\GapController::summary/$1');
 
     // -----------------------------------------------------------------------

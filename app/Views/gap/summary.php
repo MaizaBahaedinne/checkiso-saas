@@ -2,148 +2,179 @@
 <?= $this->section('content') ?>
 
 <?php
-$g = $globalStats;
-$scoreClass = $g['score'] === null ? 'bg-secondary' :
-    ($g['score'] >= 70 ? 'bg-success' : ($g['score'] >= 40 ? 'bg-warning text-dark' : 'bg-danger'));
+$gs         = $gapSession;
+$answered   = (int)$gs['answered_controls'];
+$total      = (int)$gs['total_controls'];
+$score      = (float)$gs['score'];
+$isLocked   = $gs['status'] === 'submitted';
+$pct        = $total > 0 ? round($answered / $total * 100) : 0;
+$scoreClass = $score >= 75 ? 'success' : ($score >= 50 ? 'warning' : 'danger');
+$versionId  = $sv['id'];
+
+// Quick totals from domain breakdown
+$totalAnswered   = 0;
+$totalManual     = 0;
+$countConforme   = 0;
+$countPartiel    = 0;
+$countNonConf    = 0;
+
+foreach ($domainBreakdown as $d) {
+    $totalAnswered += (int)$d['answered'];
+    $totalManual   += (int)$d['manual_review'];
+    // Determine status from avg_score per domain (rough)
+}
 ?>
 
-<!-- Header -->
+<!-- ── Header ────────────────────────────────────────────────────────────── -->
 <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
     <div>
         <a href="<?= site_url('gap') ?>" class="text-muted text-decoration-none small">
             <i class="bi bi-arrow-left me-1"></i>Gap Analysis
         </a>
         <h1 class="h3 mb-0 fw-bold mt-1">
-            <?= esc($version['standard_code']) ?>
-            <span class="text-muted fw-normal fs-5"><?= esc($version['version_code']) ?></span>
-            — Tableau de conformité
+            <?= esc($sv['standard_code']) ?>
+            <span class="text-muted fw-normal fs-5"><?= esc($sv['version_code']) ?></span>
+            — Résumé
         </h1>
-        <p class="text-muted mb-0"><?= esc($version['standard_name']) ?></p>
+        <p class="text-muted mb-0"><?= esc($sv['standard_name']) ?></p>
     </div>
-    <a href="<?= site_url('gap/' . $versionId) ?>" class="btn btn-primary">
-        <i class="bi bi-pencil-square me-1"></i>Continuer l'évaluation
-    </a>
+    <div class="d-flex gap-2">
+        <?php if (! $isLocked): ?>
+        <a href="<?= site_url('gap/' . $versionId) ?>" class="btn btn-primary btn-sm">
+            <i class="bi bi-pencil-square me-1"></i>Continuer
+        </a>
+        <?php else: ?>
+        <span class="badge bg-success d-flex align-items-center gap-1 px-3">
+            <i class="bi bi-lock-fill"></i> Évaluation soumise
+        </span>
+        <?php endif; ?>
+    </div>
 </div>
 
-<!-- ── Global KPI cards ─────────────────────────────────────────────────── -->
+<!-- ── Global KPI cards ──────────────────────────────────────────────────── -->
 <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
         <div class="card border-0 text-center shadow-sm py-3">
-            <div class="fs-2 fw-bold text-primary"><?= $g['total'] ?></div>
+            <div class="fs-2 fw-bold text-primary"><?= $total ?></div>
             <div class="small text-muted">Contrôles total</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card border-0 text-center shadow-sm py-3">
-            <div class="fs-2 fw-bold text-primary"><?= $g['assessed'] ?></div>
-            <div class="small text-muted">Évalués (<?= $g['progress'] ?>%)</div>
+            <div class="fs-2 fw-bold text-primary"><?= $answered ?></div>
+            <div class="small text-muted">Répondus (<?= $pct ?>%)</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card border-0 text-center shadow-sm py-3">
-            <div class="fs-2 fw-bold <?= $g['score'] !== null ? 'text-' . ($g['score'] >= 70 ? 'success' : ($g['score'] >= 40 ? 'warning' : 'danger')) : 'text-secondary' ?>">
-                <?= $g['score'] !== null ? $g['score'] . '%' : '—' ?>
+            <div class="fs-2 fw-bold text-<?= $answered > 0 ? $scoreClass : 'secondary' ?>">
+                <?= $answered > 0 ? number_format($score, 1) . '%' : '—' ?>
             </div>
             <div class="small text-muted">Score de conformité</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card border-0 text-center shadow-sm py-3">
-            <div class="fs-2 fw-bold text-danger"><?= $g['non_conforme'] ?></div>
-            <div class="small text-muted">Non-conformités</div>
+            <div class="fs-2 fw-bold text-info"><?= count($manualItems) ?></div>
+            <div class="small text-muted">Évaluations manuelles</div>
         </div>
     </div>
 </div>
 
-<!-- ── Global status distribution ──────────────────────────────────────── -->
-<?php if ($g['assessed'] > 0): ?>
+<!-- ── Progress bar ──────────────────────────────────────────────────────── -->
 <div class="card shadow-sm mb-4">
     <div class="card-body">
-        <h6 class="fw-semibold mb-3">Répartition globale</h6>
-        <?php
-        $evaluated = $g['total'] - $g['na'];
-        $bars = [
-            ['label' => 'Conforme',     'count' => $g['conforme'],     'class' => 'bg-success',  'pct' => $evaluated > 0 ? round($g['conforme'] / $evaluated * 100) : 0],
-            ['label' => 'Partiel',      'count' => $g['partiel'],      'class' => 'bg-warning',  'pct' => $evaluated > 0 ? round($g['partiel']  / $evaluated * 100) : 0],
-            ['label' => 'Non-conforme', 'count' => $g['non_conforme'], 'class' => 'bg-danger',   'pct' => $evaluated > 0 ? round($g['non_conforme'] / $evaluated * 100) : 0],
-            ['label' => 'N/A',          'count' => $g['na'],           'class' => 'bg-secondary','pct' => $g['total']  > 0 ? round($g['na'] / $g['total'] * 100) : 0],
-        ];
-        ?>
-        <div class="progress mb-3" style="height:24px">
-            <?php foreach ($bars as $b): if ($b['pct'] <= 0) continue; ?>
-            <div class="progress-bar <?= $b['class'] ?>"
-                 style="width:<?= $b['pct'] ?>%"
-                 title="<?= $b['label'] ?> : <?= $b['count'] ?> (<?= $b['pct'] ?>%)">
-                <?= $b['pct'] >= 8 ? $b['pct'] . '%' : '' ?>
+        <div class="d-flex justify-content-between mb-1 small text-muted">
+            <span>Progression globale</span>
+            <span><?= $answered ?> / <?= $total ?> contrôles</span>
+        </div>
+        <div class="progress mb-2" style="height:18px">
+            <div class="progress-bar bg-<?= $answered > 0 ? $scoreClass : 'secondary' ?>"
+                 style="width:<?= $pct ?>%">
+                <?= $pct >= 10 ? $pct . '%' : '' ?>
             </div>
-            <?php endforeach; ?>
         </div>
-        <div class="d-flex flex-wrap gap-3 small">
-            <?php foreach ($bars as $b): ?>
-            <span>
-                <span class="badge <?= $b['class'] ?> me-1">&nbsp;</span>
-                <?= $b['label'] ?> — <strong><?= $b['count'] ?></strong>
-            </span>
-            <?php endforeach; ?>
-        </div>
+        <?php if ($score > 0): ?>
+        <p class="mb-0 text-muted small">
+            Score moyen : <strong class="text-<?= $scoreClass ?>"><?= number_format($score, 1) ?>%</strong>
+            <?= $score >= 75 ? '🟢 Niveau de conformité satisfaisant.' : ($score >= 50 ? '🟡 Des améliorations sont nécessaires.' : '🔴 Des actions correctives urgentes sont requises.') ?>
+        </p>
+        <?php endif; ?>
     </div>
 </div>
-<?php endif; ?>
 
-<!-- ── Per-domain breakdown ─────────────────────────────────────────────── -->
+<!-- ── Per-domain breakdown ──────────────────────────────────────────────── -->
 <h5 class="fw-semibold mb-3">Détail par domaine</h5>
 
-<div class="card shadow-sm">
+<div class="card shadow-sm mb-4">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
                     <th>Domaine</th>
-                    <th class="text-center" style="width:80px">Total</th>
-                    <th class="text-center text-success" style="width:80px">✅</th>
-                    <th class="text-center text-warning" style="width:80px">⚠️</th>
-                    <th class="text-center text-danger" style="width:80px">❌</th>
-                    <th class="text-center text-secondary" style="width:60px">N/A</th>
-                    <th style="min-width:180px">Score / Progression</th>
+                    <th class="text-center" style="width:80px">Répondus</th>
+                    <th class="text-center" style="width:60px">🔍 Manuel</th>
+                    <th style="min-width:200px">Score moyen</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($domainStats as $ds): ?>
+            <?php foreach ($domainBreakdown as $d):
+                $dPct = round((float)$d['avg_score'], 1);
+                $dCls = $dPct >= 75 ? 'success' : ($dPct >= 50 ? 'warning' : 'danger');
+            ?>
                 <tr>
                     <td>
-                        <span class="badge bg-primary me-2"><?= esc($ds['domain_code']) ?></span>
-                        <span class="fw-medium"><?= esc($ds['domain_name']) ?></span>
+                        <span class="badge bg-primary me-2 font-monospace"><?= esc($d['domain_code']) ?></span>
+                        <span class="fw-medium"><?= esc($d['domain_name']) ?></span>
                     </td>
-                    <td class="text-center text-muted"><?= $ds['total'] ?></td>
-                    <td class="text-center fw-semibold text-success"><?= $ds['conforme'] ?: '—' ?></td>
-                    <td class="text-center fw-semibold text-warning"><?= $ds['partiel'] ?: '—' ?></td>
-                    <td class="text-center fw-semibold text-danger"><?= $ds['non_conforme'] ?: '—' ?></td>
-                    <td class="text-center text-secondary"><?= $ds['na'] ?: '—' ?></td>
+                    <td class="text-center"><?= (int)$d['answered'] ?></td>
+                    <td class="text-center text-info fw-semibold"><?= (int)$d['manual_review'] ?: '—' ?></td>
                     <td>
-                        <?php if ($ds['score'] !== null): ?>
-                            <?php $cls = $ds['score'] >= 70 ? 'success' : ($ds['score'] >= 40 ? 'warning' : 'danger'); ?>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="progress flex-grow-1" style="height:8px">
-                                    <div class="progress-bar bg-<?= $cls ?>" style="width:<?= $ds['score'] ?>%"></div>
-                                </div>
-                                <span class="badge bg-<?= $cls ?> text-nowrap"><?= $ds['score'] ?>%</span>
+                        <?php if ((int)$d['answered'] > 0): ?>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height:10px">
+                                <div class="progress-bar bg-<?= $dCls ?>" style="width:<?= $dPct ?>%"></div>
                             </div>
-                        <?php elseif ($ds['assessed_total'] > 0): ?>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="progress flex-grow-1" style="height:8px">
-                                    <div class="progress-bar bg-secondary" style="width:<?= $ds['progress'] ?>%"></div>
-                                </div>
-                                <small class="text-muted"><?= $ds['progress'] ?>%</small>
-                            </div>
+                            <span class="badge bg-<?= $dCls ?>"><?= number_format($dPct, 1) ?>%</span>
+                        </div>
                         <?php else: ?>
-                            <span class="text-muted small">Non évalué</span>
+                        <span class="text-muted small">Non répondu</span>
                         <?php endif; ?>
                     </td>
                 </tr>
-                <?php endforeach; ?>
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>
 </div>
+
+<!-- ── Manual review items ───────────────────────────────────────────────── -->
+<?php if (! empty($manualItems)): ?>
+<h5 class="fw-semibold mb-3">
+    <i class="bi bi-flag text-info me-2"></i>Réponses nécessitant une évaluation manuelle
+</h5>
+<div class="card shadow-sm">
+    <div class="list-group list-group-flush">
+        <?php foreach ($manualItems as $m): ?>
+        <div class="list-group-item">
+            <div class="d-flex align-items-start gap-3">
+                <span class="badge bg-secondary font-monospace mt-1"><?= esc($m['control_code']) ?></span>
+                <div class="flex-grow-1">
+                    <p class="mb-1 fw-semibold small"><?= esc($m['control_title']) ?></p>
+                    <?php if ($m['other_text']): ?>
+                    <p class="mb-0 text-muted small"><i class="bi bi-chat-left-text me-1"></i><?= nl2br(esc($m['other_text'])) ?></p>
+                    <?php elseif ($m['justification']): ?>
+                    <p class="mb-0 text-muted small"><i class="bi bi-pencil me-1"></i><?= nl2br(esc($m['justification'])) ?></p>
+                    <?php else: ?>
+                    <p class="mb-0 text-muted small fst-italic">Aucune précision fournie.</p>
+                    <?php endif; ?>
+                </div>
+                <span class="badge bg-info-subtle text-info border border-info-subtle">Manuel</span>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
 
 <?= $this->endSection() ?>
