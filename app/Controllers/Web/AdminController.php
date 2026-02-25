@@ -191,7 +191,7 @@ class AdminController extends BaseController
     public function catalogShow(int $versionId)
     {
         $version = $this->db->table('standard_versions sv')
-            ->select('sv.*, s.code AS standard_code, s.name AS standard_name')
+            ->select('sv.*, sv.title AS version_title, s.code AS standard_code, s.name AS standard_name')
             ->join('standards s', 's.id = sv.standard_id')
             ->where('sv.id', $versionId)
             ->get()->getRowArray();
