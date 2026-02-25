@@ -61,15 +61,42 @@ class DashboardController extends BaseController
         $submittedCount = count(array_filter($sessions, fn($s) => $s['status'] === 'submitted'));
         $inProgressCount = count(array_filter($sessions, fn($s) => $s['status'] === 'draft' && (int)$s['answered_controls'] > 0));
 
+        // ── Domain breakdown per session (single query, indexed by standard_version_id) ──
+        $domainBreakdowns = [];
+        if (! empty($sessions)) {
+            $sessionIds           = array_column($sessions, 'id');
+            $sessionIdToVersionId = array_column($sessions, 'standard_version_id', 'id');
+            $breakdownRows = $db->table('gap_answers ga')
+                ->select([
+                    'ga.session_id',
+                    'd.code AS domain_code',
+                    'IFNULL(AVG(ga.score_pct), 0) AS avg_score',
+                ])
+                ->join('controls c',  'c.id  = ga.control_id')
+                ->join('clauses cl',  'cl.id = c.clause_id')
+                ->join('domains d',   'd.id  = cl.domain_id')
+                ->whereIn('ga.session_id', $sessionIds)
+                ->groupBy('ga.session_id, d.id')
+                ->orderBy('d.code', 'ASC')
+                ->get()->getResultArray();
+            foreach ($breakdownRows as $row) {
+                $svId = $sessionIdToVersionId[$row['session_id']] ?? null;
+                if ($svId !== null) {
+                    $domainBreakdowns[$svId][] = $row;
+                }
+            }
+        }
+
         return view('dashboard/index', [
-            'title'          => 'Dashboard — CheckISO',
-            'subscriptions'  => $subscriptions,
-            'memberCount'    => $memberCount,
-            'manualCount'    => $manualCount,
-            'totalControls'  => $totalControls,
-            'submittedCount' => $submittedCount,
-            'inProgressCount'=> $inProgressCount,
-            'actionStats'    => $actionStats,
+            'title'            => 'Dashboard — CheckISO',
+            'subscriptions'    => $subscriptions,
+            'memberCount'      => $memberCount,
+            'manualCount'      => $manualCount,
+            'totalControls'    => $totalControls,
+            'submittedCount'   => $submittedCount,
+            'inProgressCount'  => $inProgressCount,
+            'actionStats'      => $actionStats,
+            'domainBreakdowns' => $domainBreakdowns,
         ]);
     }
 }

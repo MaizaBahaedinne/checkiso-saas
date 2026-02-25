@@ -2,10 +2,11 @@
 <?= $this->section('content') ?>
 
 <?php
-$userName    = esc(session()->get('user_name'));
-$isOrgAdmin  = session()->get('role_code') === 'org.admin';
-$subCount    = count($subscriptions);
-$hasManual   = $manualCount > 0;
+$userName     = esc(session()->get('user_name'));
+$isOrgAdmin   = session()->get('role_code') === 'org.admin';
+$subCount     = count($subscriptions);
+$hasManual    = $manualCount > 0;
+$chartConfigs = [];
 ?>
 
 <!-- ── Page header ────────────────────────────────────────────────────────── -->
@@ -222,6 +223,23 @@ $hasManual   = $manualCount > 0;
             <div class="progress mb-0" style="height:8px">
                 <div class="progress-bar <?= $barClass ?>" style="width:<?= $pct ?>%"></div>
             </div>
+
+            <?php
+            $_svDomains = $domainBreakdowns[$sv['id']] ?? [];
+            if (! empty($_svDomains) && $answered > 0):
+                $_cid = 'miniRadar_' . $sv['id'];
+                $chartConfigs[] = [
+                    'id'     => $_cid,
+                    'labels' => array_column($_svDomains, 'domain_code'),
+                    'data'   => array_map(fn($d) => round((float)$d['avg_score'], 1), $_svDomains),
+                ];
+            ?>
+            <div class="mt-3 d-flex justify-content-center">
+                <div style="position:relative;height:180px;width:100%;max-width:260px">
+                    <canvas id="<?= $_cid ?>"></canvas>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
 
         <div class="card-footer bg-transparent border-top d-flex gap-2">
@@ -253,5 +271,49 @@ $hasManual   = $manualCount > 0;
 .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.1) !important; }
 .kpi-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 </style>
+
+<?php if (! empty($chartConfigs)): ?>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const configs = <?= json_encode($chartConfigs) ?>;
+    configs.forEach(function (cfg) {
+        const el = document.getElementById(cfg.id);
+        if (! el) return;
+        new Chart(el, {
+            type: 'radar',
+            data: {
+                labels: cfg.labels,
+                datasets: [{
+                    data: cfg.data,
+                    backgroundColor: 'rgba(26,86,219,0.12)',
+                    borderColor: '#1a56db',
+                    pointBackgroundColor: '#1a56db',
+                    pointRadius: 3,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        min: 0, max: 100,
+                        ticks: { display: false },
+                        pointLabels: { font: { size: 10 }, color: '#6b7280' },
+                        grid: { color: 'rgba(0,0,0,.07)' },
+                        angleLines: { color: 'rgba(0,0,0,.07)' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            }
+        });
+    });
+})();
+</script>
+<?php endif; ?>
 
 <?= $this->endSection() ?>

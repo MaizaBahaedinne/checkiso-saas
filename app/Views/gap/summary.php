@@ -109,6 +109,66 @@ foreach ($domainBreakdown as $d) {
     </div>
 </div>
 
+<!-- ── Radar chart ───────────────────────────────────────────────────────── -->
+<?php
+$_radarLabels = json_encode(array_column($domainBreakdown, 'domain_code'));
+$_radarData   = json_encode(array_map(fn($d) => round((float)$d['avg_score'], 1), $domainBreakdown));
+$_hasRadar    = array_sum(array_column($domainBreakdown, 'answered')) > 0;
+?>
+<?php if ($_hasRadar): ?>
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h6 class="fw-semibold text-muted mb-3">
+            <i class="bi bi-bullseye me-2"></i>Conformité par domaine
+        </h6>
+        <div class="d-flex justify-content-center">
+            <div style="position:relative;height:320px;width:100%;max-width:440px">
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const labels = <?= $_radarLabels ?>;
+    const data   = <?= $_radarData ?>;
+    new Chart(document.getElementById('radarChart'), {
+        type: 'radar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Score (%)',
+                data,
+                backgroundColor: 'rgba(26,86,219,0.12)',
+                borderColor: '#1a56db',
+                pointBackgroundColor: '#1a56db',
+                pointRadius: 4,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    min: 0, max: 100,
+                    ticks: { stepSize: 25, color: '#6b7280', font: { size: 11 } },
+                    pointLabels: { font: { size: 12, weight: '600' }, color: '#374151' },
+                    grid: { color: 'rgba(0,0,0,.07)' },
+                    angleLines: { color: 'rgba(0,0,0,.07)' }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.r.toFixed(1)} %` } }
+            }
+        }
+    });
+})();
+</script>
+<?php endif; ?>
+
 <!-- ── Per-domain breakdown ──────────────────────────────────────────────── -->
 <h5 class="fw-semibold mb-3"><?= lang('Gap.domain_detail') ?></h5>
 
