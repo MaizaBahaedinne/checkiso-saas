@@ -3,11 +3,20 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<div class="d-flex align-items-center gap-3 mb-4">
+<?php
+    $answered = (int)$session['answered_controls'];
+    $total    = (int)$session['total_controls'];
+    $progress = $total > 0 ? round($answered / $total * 100) : 0;
+    $isDraft  = $session['status'] !== 'submitted';
+    $scoreColor = $liveScore >= 75 ? 'success' : ($liveScore >= 50 ? 'warning' : 'danger');
+?>
+
+<!-- Header -->
+<div class="d-flex align-items-center gap-3 mb-3">
     <a href="<?= site_url('admin/gap') ?>" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left me-1"></i>Toutes les sessions
     </a>
-    <div>
+    <div class="flex-grow-1">
         <h4 class="fw-semibold mb-0">
             Session #<?= $session['id'] ?> —
             <span class="badge bg-primary font-monospace"><?= esc($session['standard_code']) ?></span>
@@ -15,15 +24,77 @@
         </h4>
         <p class="text-muted small mb-0">
             Organisation : <strong><?= esc($session['tenant_name']) ?></strong>
-            · Statut :
-            <?php if ($session['status'] === 'submitted'): ?>
-            <span class="badge bg-success">Soumis</span>
-            <?php else: ?>
-            <span class="badge bg-primary">En cours / Draft</span>
-            <?php endif ?>
-            · <?= (int)$session['answered_controls'] ?> / <?= (int)$session['total_controls'] ?> réponses
-            · Score : <?= number_format((float)$session['score'], 1) ?>%
+            · <?php if ($isDraft): ?>
+                <span class="badge bg-warning text-dark"><i class="bi bi-pencil me-1"></i>En cours</span>
+              <?php else: ?>
+                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Soumis</span>
+              <?php endif ?>
         </p>
+    </div>
+    <?php if (! $isDraft): ?>
+    <form method="post" action="<?= site_url('admin/gap/reset/' . $session['id']) ?>"
+          onsubmit="return confirm('Réinitialiser cette session ? Toutes les réponses seront perdues.')">
+        <?= csrf_field() ?>
+        <button class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>Réinitialiser
+        </button>
+    </form>
+    <?php endif ?>
+</div>
+
+<!-- KPI cards + progress -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1"><i class="bi bi-bar-chart-steps me-1"></i>Avancement</div>
+                <div class="d-flex align-items-end gap-2 mb-2">
+                    <span class="fs-3 fw-bold"><?= $progress ?>%</span>
+                    <span class="text-muted small mb-1"><?= $answered ?> / <?= $total ?> contrôles</span>
+                </div>
+                <div class="progress" style="height:6px">
+                    <div class="progress-bar <?= $progress === 100 ? 'bg-success' : 'bg-primary' ?>"
+                         style="width:<?= $progress ?>%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card border-0 shadow-sm h-100 border-start border-4 border-<?= $scoreColor ?>">
+            <div class="card-body">
+                <div class="text-muted small mb-1">
+                    <i class="bi bi-speedometer2 me-1"></i>Score<?= $isDraft ? ' (provisoire)' : '' ?>
+                </div>
+                <span class="fs-3 fw-bold text-<?= $scoreColor ?>"><?= $liveScore ?>%</span>
+                <?php if ($isDraft && $session['score'] !== null): ?>
+                <div class="text-muted" style="font-size:.72rem">Soumis : <?= number_format((float)$session['score'], 1) ?>%</div>
+                <?php endif ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1"><i class="bi bi-check-circle me-1 text-success"></i>Conformes</div>
+                <span class="fs-3 fw-bold text-success"><?= $statusCounts['conforme'] ?></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1"><i class="bi bi-dash-circle me-1 text-warning"></i>Partiels</div>
+                <span class="fs-3 fw-bold text-warning"><?= $statusCounts['partiel'] ?></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-2">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1"><i class="bi bi-x-circle me-1 text-danger"></i>Non conformes</div>
+                <span class="fs-3 fw-bold text-danger"><?= $statusCounts['non_conforme'] ?></span>
+            </div>
+        </div>
     </div>
 </div>
 

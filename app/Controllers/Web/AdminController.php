@@ -353,10 +353,26 @@ class AdminController extends BaseController
             $byDomain[$a['domain_code']]['answers'][] = $a;
         }
 
+        // Live score computed from existing answers (works for draft too)
+        $liveScore      = 0;
+        $statusCounts   = ['conforme' => 0, 'partiel' => 0, 'non_conforme' => 0, 'manual_review' => 0];
+        if (count($answers) > 0) {
+            $liveScore = array_sum(array_column($answers, 'score_pct')) / count($answers);
+            foreach ($answers as $a) {
+                if ($a['is_manual_review']) {
+                    $statusCounts['manual_review']++;
+                } elseif (isset($statusCounts[$a['status']])) {
+                    $statusCounts[$a['status']]++;
+                }
+            }
+        }
+
         return view('admin/gap_session', [
-            'title'    => 'Session #{$sessionId} — Gap Admin',
-            'session'  => $session,
-            'byDomain' => $byDomain,
+            'title'        => "Session #{$sessionId} — Gap Admin",
+            'session'      => $session,
+            'byDomain'     => $byDomain,
+            'liveScore'    => round($liveScore, 1),
+            'statusCounts' => $statusCounts,
         ]);
     }
 
