@@ -119,16 +119,12 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
 
                     <!-- Choices -->
                     <div class="d-flex flex-column gap-2">
-<?php foreach ($qa['choices'] as $ch): ?>
+<?php foreach ($qa['choices'] as $chIdx => $ch): ?>
                         <?php
                         $isSelected = $savedKey === $ch['choice_key'];
-                        $choiceClass = 'quiz-choice btn btn-outline-secondary text-start w-100';
-                        if ($isSelected) {
-                            $choiceClass = 'quiz-choice btn btn-primary text-start w-100';
-                        }
-                        if ($ch['is_manual_review']) {
-                            $choiceClass .= $isSelected ? '' : ' text-muted fst-italic';
-                        }
+                        $choiceClass = $isSelected
+                            ? 'quiz-choice btn btn-primary text-start w-100'
+                            : 'quiz-choice btn btn-outline-secondary text-start w-100';
                         ?>
                         <button type="button"
                                 class="<?= $choiceClass ?>"
@@ -138,7 +134,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                                 data-requires-justification="<?= $ch['requires_justification'] ?>"
                                 data-is-manual-review="<?= $ch['is_manual_review'] ?>"
                                 <?= $isLocked ? 'disabled' : '' ?>>
-                            <span class="badge bg-white text-dark border me-2 font-monospace"><?= strtoupper($ch['choice_key']) ?></span>
+                            <span class="badge bg-white text-dark border me-2 font-monospace"><?= chr(65 + $chIdx) ?></span>
                             <?= esc($ch['label']) ?>
                         </button>
 <?php endforeach; ?>
