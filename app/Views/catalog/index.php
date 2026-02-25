@@ -48,13 +48,10 @@
                             <div>
                                 <h5 class="card-title mb-1 fw-semibold"><?= esc($v['standard_name']) ?></h5>
                                 <span class="badge bg-secondary"><?= esc($v['version_code']) ?></span>
-                                <?php if ($v['standard_organization']): ?>
-                                    <span class="badge bg-light text-dark border ms-1"><?= esc($v['standard_organization']) ?></span>
-                                <?php endif; ?>
                             </div>
                         </div>
-                        <?php if ($v['description']): ?>
-                            <p class="card-text text-muted small"><?= esc($v['description']) ?></p>
+                        <?php if (!empty($v['standard_description'])): ?>
+                            <p class="card-text text-muted small"><?= esc($v['standard_description']) ?></p>
                         <?php endif; ?>
                     </div>
                     <div class="card-footer bg-transparent border-top-0 d-flex gap-2">

@@ -77,9 +77,9 @@ foreach ($controlsByClause as $ctrls) { $totalControls += count($ctrls); }
 </div>
 
 <!-- Description -->
-<?php if (!empty($version['standard_description']) || !empty($version['description'])): ?>
+<?php if (!empty($version['standard_description'])): ?>
     <div class="alert alert-light border mb-4">
-        <?= esc($version['standard_description'] ?? $version['description']) ?>
+        <?= esc($version['standard_description']) ?>
     </div>
 <?php endif; ?>
 
@@ -113,7 +113,7 @@ foreach ($controlsByClause as $ctrls) { $totalControls += count($ctrls); }
                     aria-expanded="<?= $di === 0 ? 'true' : 'false' ?>"
                     aria-controls="<?= $domainCollapseId ?>">
                     <span class="badge bg-primary me-3 fs-6"><?= esc($domain['code']) ?></span>
-                    <?= esc($domain['title']) ?>
+                    <?= esc($domain['name']) ?>
                     <span class="ms-auto me-3 badge bg-light text-dark border small">
                         <?= count($domainClauses) ?> clause<?= count($domainClauses) > 1 ? 's' : '' ?>
                         · <?= $domainControlCount ?> contrôle<?= $domainControlCount > 1 ? 's' : '' ?>

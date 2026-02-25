@@ -22,11 +22,11 @@ class StandardVersionModel extends Model
     public function getActive(): array
     {
         return $this->db->table('standard_versions sv')
-            ->select('sv.*, s.name AS standard_name, s.code AS standard_code, s.organization AS standard_organization')
+            ->select('sv.id, sv.standard_id, sv.version AS version_code, sv.title, sv.is_active, sv.published_at, YEAR(sv.published_at) AS published_year, sv.created_at, sv.updated_at, s.name AS standard_name, s.code AS standard_code, s.description AS standard_description')
             ->join('standards s', 's.id = sv.standard_id')
             ->where('sv.is_active', 1)
             ->orderBy('s.code', 'ASC')
-            ->orderBy('sv.published_year', 'DESC')
+            ->orderBy('sv.published_at', 'DESC')
             ->get()
             ->getResultArray();
     }
@@ -37,7 +37,7 @@ class StandardVersionModel extends Model
     public function forTenant(int $tenantId): array
     {
         return $this->db->table('tenant_standards ts')
-            ->select('sv.*, s.name AS standard_name, s.code AS standard_code, s.organization AS standard_organization, ts.id AS subscription_id, ts.created_at AS subscribed_at')
+            ->select('sv.id, sv.standard_id, sv.version AS version_code, sv.title, sv.is_active, sv.published_at, YEAR(sv.published_at) AS published_year, sv.created_at, sv.updated_at, s.name AS standard_name, s.code AS standard_code, s.description AS standard_description, ts.id AS subscription_id, ts.standard_version_id, ts.created_at AS subscribed_at')
             ->join('standard_versions sv', 'sv.id = ts.standard_version_id')
             ->join('standards s', 's.id = sv.standard_id')
             ->where('ts.tenant_id', $tenantId)
@@ -100,7 +100,7 @@ class StandardVersionModel extends Model
     public function getWithStandard(int $versionId): ?array
     {
         $row = $this->db->table('standard_versions sv')
-            ->select('sv.*, s.name AS standard_name, s.code AS standard_code, s.organization AS standard_organization, s.description AS standard_description')
+            ->select('sv.id, sv.standard_id, sv.version AS version_code, sv.title, sv.is_active, sv.published_at, YEAR(sv.published_at) AS published_year, sv.created_at, sv.updated_at, s.name AS standard_name, s.code AS standard_code, s.description AS standard_description')
             ->join('standards s', 's.id = sv.standard_id')
             ->where('sv.id', $versionId)
             ->get()
