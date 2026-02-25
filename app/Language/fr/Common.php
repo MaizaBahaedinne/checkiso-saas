@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'save'     => 'Enregistrer',
+    'cancel'   => 'Annuler',
+    'submit'   => 'Soumettre',
+    'confirm'  => 'Confirmer',
+    'delete'   => 'Supprimer',
+    'edit'     => 'Modifier',
+    'back'     => 'Retour',
+    'close'    => 'Fermer',
+    'loading'  => 'Chargement…',
+    'error'    => 'Erreur',
+    'success'  => 'Succès',
+    'yes'      => 'Oui',
+    'no'       => 'Non',
+    'search'   => 'Rechercher',
+    'actions'  => 'Actions',
+    'status'   => 'Statut',
+    'date'     => 'Date',
+    'name'     => 'Nom',
+    'email'    => 'E-mail',
+    'role'     => 'Rôle',
+    'active'   => 'Actif',
+    'inactive' => 'Inactif',
+];

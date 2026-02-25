@@ -29,23 +29,23 @@ foreach ($domainBreakdown as $d) {
 <div class="d-flex align-items-start justify-content-between mb-4 flex-wrap gap-3">
     <div>
         <a href="<?= site_url('gap') ?>" class="text-muted text-decoration-none small">
-            <i class="bi bi-arrow-left me-1"></i>Gap Analysis
+            <i class="bi bi-arrow-left me-1"></i><?= lang('Gap.back_to_gap') ?>
         </a>
         <h1 class="h3 mb-0 fw-bold mt-1">
             <?= esc($sv['standard_code']) ?>
             <span class="text-muted fw-normal fs-5"><?= esc($sv['version_code']) ?></span>
-            — Résumé
+            — <?= lang('Gap.summary_title') ?>
         </h1>
         <p class="text-muted mb-0"><?= esc($sv['standard_name']) ?></p>
     </div>
     <div class="d-flex gap-2">
         <?php if (! $isLocked): ?>
         <a href="<?= site_url('gap/' . $versionId) ?>" class="btn btn-primary btn-sm">
-            <i class="bi bi-pencil-square me-1"></i>Continuer
+            <i class="bi bi-pencil-square me-1"></i><?= lang('Gap.continue_btn') ?>
         </a>
         <?php else: ?>
         <span class="badge bg-success d-flex align-items-center gap-1 px-3">
-            <i class="bi bi-lock-fill"></i> Évaluation soumise
+            <i class="bi bi-lock-fill"></i> <?= lang('Gap.evaluation_submitted') ?>
         </span>
         <?php endif; ?>
     </div>
@@ -56,13 +56,13 @@ foreach ($domainBreakdown as $d) {
     <div class="col-6 col-md-3">
         <div class="card border-0 text-center shadow-sm py-3">
             <div class="fs-2 fw-bold text-primary"><?= $total ?></div>
-            <div class="small text-muted">Contrôles total</div>
+            <div class="small text-muted"><?= lang('Gap.total_controls') ?></div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card border-0 text-center shadow-sm py-3">
             <div class="fs-2 fw-bold text-primary"><?= $answered ?></div>
-            <div class="small text-muted">Répondus (<?= $pct ?>%)</div>
+            <div class="small text-muted"><?= lang('Gap.answered') ?> (<?= $pct ?>%)</div>
         </div>
     </div>
     <div class="col-6 col-md-3">
@@ -70,13 +70,13 @@ foreach ($domainBreakdown as $d) {
             <div class="fs-2 fw-bold text-<?= $answered > 0 ? $scoreClass : 'secondary' ?>">
                 <?= $answered > 0 ? number_format($score, 1) . '%' : '—' ?>
             </div>
-            <div class="small text-muted">Score de conformité</div>
+            <div class="small text-muted"><?= lang('Gap.compliance_score') ?></div>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="card border-0 text-center shadow-sm py-3">
             <div class="fs-2 fw-bold text-info"><?= count($manualItems) ?></div>
-            <div class="small text-muted">Évaluations manuelles</div>
+            <div class="small text-muted"><?= lang('Gap.manual_evaluations') ?></div>
         </div>
     </div>
 </div>
@@ -85,8 +85,8 @@ foreach ($domainBreakdown as $d) {
 <div class="card shadow-sm mb-4">
     <div class="card-body">
         <div class="d-flex justify-content-between mb-1 small text-muted">
-            <span>Progression globale</span>
-            <span><?= $answered ?> / <?= $total ?> contrôles</span>
+            <span><?= lang('Gap.global_progress') ?></span>
+            <span><?= $answered ?> / <?= $total ?> <?= lang('Gap.controls_label') ?></span>
         </div>
         <div class="progress mb-2" style="height:18px">
             <div class="progress-bar bg-<?= $answered > 0 ? $scoreClass : 'secondary' ?>"
@@ -96,25 +96,25 @@ foreach ($domainBreakdown as $d) {
         </div>
         <?php if ($score > 0): ?>
         <p class="mb-0 text-muted small">
-            Score moyen : <strong class="text-<?= $scoreClass ?>"><?= number_format($score, 1) ?>%</strong>
-            <?= $score >= 75 ? '🟢 Niveau de conformité satisfaisant.' : ($score >= 50 ? '🟡 Des améliorations sont nécessaires.' : '🔴 Des actions correctives urgentes sont requises.') ?>
+            <?= lang('Gap.avg_score') ?> : <strong class="text-<?= $scoreClass ?>"><?= number_format($score, 1) ?>%</strong>
+            <?= $score >= 75 ? lang('Gap.score_good') : ($score >= 50 ? lang('Gap.score_medium') : lang('Gap.score_poor')) ?>
         </p>
         <?php endif; ?>
     </div>
 </div>
 
 <!-- ── Per-domain breakdown ──────────────────────────────────────────────── -->
-<h5 class="fw-semibold mb-3">Détail par domaine</h5>
+<h5 class="fw-semibold mb-3"><?= lang('Gap.domain_detail') ?></h5>
 
 <div class="card shadow-sm mb-4">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>Domaine</th>
-                    <th class="text-center" style="width:80px">Répondus</th>
-                    <th class="text-center" style="width:60px">🔍 Manuel</th>
-                    <th style="min-width:200px">Score moyen</th>
+                    <th><?= lang('Gap.domain_col') ?></th>
+                    <th class="text-center" style="width:80px"><?= lang('Gap.answered_col') ?></th>
+                    <th class="text-center" style="width:60px">🔍 <?= lang('Gap.manual_col') ?></th>
+                    <th style="min-width:200px"><?= lang('Gap.avg_score_col') ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -138,7 +138,7 @@ foreach ($domainBreakdown as $d) {
                             <span class="badge bg-<?= $dCls ?>"><?= number_format($dPct, 1) ?>%</span>
                         </div>
                         <?php else: ?>
-                        <span class="text-muted small">Non répondu</span>
+                        <span class="text-muted small"><?= lang('Gap.not_answered') ?></span>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -151,7 +151,7 @@ foreach ($domainBreakdown as $d) {
 <!-- ── Manual review items ───────────────────────────────────────────────── -->
 <?php if (! empty($manualItems)): ?>
 <h5 class="fw-semibold mb-3">
-    <i class="bi bi-flag text-info me-2"></i>Réponses nécessitant une évaluation manuelle
+    <i class="bi bi-flag text-info me-2"></i><?= lang('Gap.manual_review_section') ?>
 </h5>
 <div class="card shadow-sm">
     <div class="list-group list-group-flush">
@@ -166,10 +166,10 @@ foreach ($domainBreakdown as $d) {
                     <?php elseif ($m['justification']): ?>
                     <p class="mb-0 text-muted small"><i class="bi bi-pencil me-1"></i><?= nl2br(esc($m['justification'])) ?></p>
                     <?php else: ?>
-                    <p class="mb-0 text-muted small fst-italic">Aucune précision fournie.</p>
+                    <p class="mb-0 text-muted small fst-italic"><?= lang('Gap.no_response') ?></p>
                     <?php endif; ?>
                 </div>
-                <span class="badge bg-info-subtle text-info border border-info-subtle">Manuel</span>
+                <span class="badge bg-info-subtle text-info border border-info-subtle"><?= lang('Gap.manual_col') ?></span>
             </div>
         </div>
         <?php endforeach; ?>

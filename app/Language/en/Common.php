@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'save'     => 'Save',
+    'cancel'   => 'Cancel',
+    'submit'   => 'Submit',
+    'confirm'  => 'Confirm',
+    'delete'   => 'Delete',
+    'edit'     => 'Edit',
+    'back'     => 'Back',
+    'close'    => 'Close',
+    'loading'  => 'Loading…',
+    'error'    => 'Error',
+    'success'  => 'Success',
+    'yes'      => 'Yes',
+    'no'       => 'No',
+    'search'   => 'Search',
+    'actions'  => 'Actions',
+    'status'   => 'Status',
+    'date'     => 'Date',
+    'name'     => 'Name',
+    'email'    => 'Email',
+    'role'     => 'Role',
+    'active'   => 'Active',
+    'inactive' => 'Inactive',
+];

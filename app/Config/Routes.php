@@ -7,6 +7,9 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index');
 
+// Language switcher (public — works before and after login)
+$routes->get('/lang/(:alpha)', 'Web\LangController::switch/$1');
+
 // ---------------------------------------------------------------------------
 // Auth (public)
 // ---------------------------------------------------------------------------

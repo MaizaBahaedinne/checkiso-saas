@@ -3,11 +3,11 @@
 
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <h1 class="h3 mb-0 fw-bold">📊 Gap Analysis</h1>
-        <p class="text-muted mb-0">Évaluez la conformité de votre organisation via un questionnaire guidé.</p>
+        <h1 class="h3 mb-0 fw-bold">📊 <?= lang('Gap.title') ?></h1>
+        <p class="text-muted mb-0"><?= lang('Gap.subtitle') ?></p>
     </div>
     <a href="<?= site_url('catalog') ?>" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-journals me-1"></i>Catalogue
+        <i class="bi bi-journals me-1"></i><?= lang('Gap.catalogue_btn') ?>
     </a>
 </div>
 
@@ -18,8 +18,8 @@
 <?php if (empty($standards)): ?>
     <div class="text-center text-muted py-5">
         <i class="bi bi-clipboard-x fs-1 d-block mb-3"></i>
-        <p class="mb-2">Aucun référentiel souscrit.</p>
-        <a href="<?= site_url('catalog') ?>" class="btn btn-primary">Accéder au catalogue</a>
+        <p class="mb-2"><?= lang('Gap.no_standards') ?></p>
+        <a href="<?= site_url('catalog') ?>" class="btn btn-primary"><?= lang('Gap.access_catalog') ?></a>
     </div>
 <?php else: ?>
     <div class="row row-cols-1 row-cols-md-2 g-4">
@@ -43,11 +43,11 @@
                         <div class="flex-grow-1">
                             <h5 class="mb-1 fw-semibold"><?= esc($s['standard_name']) ?></h5>
                             <?php if ($status === 'submitted'): ?>
-                                <span class="badge bg-success fs-6">✅ Soumis — Score : <?= number_format($score, 1) ?>%</span>
+                                <span class="badge bg-success">✅ <?= lang('Gap.status_submitted') ?> — <?= lang('Gap.score_label') ?> : <?= number_format($score, 1) ?>%</span>
                             <?php elseif ($gs && $answered > 0): ?>
-                                <span class="badge <?= $scoreClass ?> fs-6">Score partiel : <?= number_format($score, 1) ?>%</span>
+                                <span class="badge <?= $scoreClass ?>"><?= lang('Gap.status_partial_score') ?> : <?= number_format($score, 1) ?>%</span>
                             <?php else: ?>
-                                <span class="badge bg-secondary">Non commencé</span>
+                                <span class="badge bg-secondary"><?= lang('Gap.status_not_started') ?></span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -55,8 +55,8 @@
                     <!-- Progress bar -->
                     <div class="mb-3">
                         <div class="d-flex justify-content-between small text-muted mb-1">
-                            <span>Progression</span>
-                            <span><?= $answered ?> / <?= $total ?> contrôles répondus</span>
+                            <span><?= lang('Gap.progress') ?></span>
+                            <span><?= $answered ?> / <?= $total ?> <?= lang('Gap.controls_answered') ?></span>
                         </div>
                         <div class="progress" style="height:10px">
                             <div class="progress-bar <?= $status === 'submitted' ? 'bg-success' : 'bg-primary' ?>"
@@ -67,12 +67,12 @@
                 <div class="card-footer bg-transparent d-flex gap-2">
                     <?php if ($status !== 'submitted'): ?>
                         <a href="<?= site_url('gap/' . $s['id']) ?>" class="btn btn-primary btn-sm flex-grow-1">
-                            <i class="bi bi-pencil-square me-1"></i><?= $answered > 0 ? 'Continuer' : 'Démarrer' ?> le questionnaire
+                            <i class="bi bi-pencil-square me-1"></i><?= $answered > 0 ? lang('Gap.continue') : lang('Gap.start') ?> <?= lang('Gap.questionnaire') ?>
                         </a>
                     <?php endif; ?>
                     <?php if ($gs): ?>
                         <a href="<?= site_url('gap/' . $s['id'] . '/summary') ?>" class="btn btn-outline-secondary btn-sm <?= $status !== 'submitted' ? '' : 'flex-grow-1' ?>">
-                            <i class="bi bi-bar-chart me-1"></i>Résumé
+                            <i class="bi bi-bar-chart me-1"></i><?= lang('Gap.resume_btn') ?>
                         </a>
                     <?php endif; ?>
                 </div>

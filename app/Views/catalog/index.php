@@ -3,8 +3,8 @@
 
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
-        <h1 class="h3 mb-0 fw-bold">📚 Catalogue de normes</h1>
-        <p class="text-muted mb-0">Abonnez-vous aux référentiels ISO applicables à votre organisation.</p>
+        <h1 class="h3 mb-0 fw-bold">📚 <?= lang('Catalog.title') ?></h1>
+        <p class="text-muted mb-0"><?= lang('Catalog.subtitle') ?></p>
     </div>
 </div>
 
@@ -24,7 +24,7 @@
 <?php if (empty($versions)): ?>
     <div class="text-center text-muted py-5">
         <i class="bi bi-journal-x fs-1 d-block mb-3"></i>
-        Aucun référentiel disponible pour le moment.
+        <?= lang('Catalog.no_standards') ?>
     </div>
 <?php else: ?>
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
@@ -35,7 +35,7 @@
                     <?php if ($sub): ?>
                         <div class="card-header bg-success text-white d-flex align-items-center gap-2 py-2">
                             <i class="bi bi-check-circle-fill"></i>
-                            <small class="fw-semibold">Abonné</small>
+                            <small class="fw-semibold"><?= lang('Catalog.subscribed_label') ?></small>
                         </div>
                     <?php endif; ?>
                     <div class="card-body">
@@ -56,21 +56,21 @@
                     </div>
                     <div class="card-footer bg-transparent border-top-0 d-flex gap-2">
                         <a href="<?= site_url('catalog/' . $v['id']) ?>" class="btn btn-outline-primary btn-sm flex-grow-1">
-                            <i class="bi bi-eye me-1"></i>Consulter
+                            <i class="bi bi-eye me-1"></i><?= lang('Catalog.consult_btn') ?>
                         </a>
                         <?php if ($sub): ?>
                             <form action="<?= site_url('catalog/' . $v['id'] . '/unsubscribe') ?>" method="post" class="d-inline">
                                 <?= csrf_field() ?>
                                 <button type="submit" class="btn btn-outline-danger btn-sm"
-                                    onclick="return confirm('Se désabonner de ce référentiel ?')">
-                                    <i class="bi bi-dash-circle me-1"></i>Désabonner
+                                    onclick="return confirm('<?= lang('Catalog.confirm_unsubscribe') ?>')">
+                                    <i class="bi bi-dash-circle me-1"></i><?= lang('Catalog.unsubscribe_btn') ?>
                                 </button>
                             </form>
                         <?php else: ?>
                             <form action="<?= site_url('catalog/' . $v['id'] . '/subscribe') ?>" method="post" class="d-inline">
                                 <?= csrf_field() ?>
                                 <button type="submit" class="btn btn-success btn-sm">
-                                    <i class="bi bi-plus-circle me-1"></i>S'abonner
+                                    <i class="bi bi-plus-circle me-1"></i><?= lang('Catalog.subscribe_btn') ?>
                                 </button>
                             </form>
                         <?php endif; ?>

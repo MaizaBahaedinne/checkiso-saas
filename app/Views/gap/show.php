@@ -17,7 +17,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
 <div class="d-flex align-items-start justify-content-between mb-3 flex-wrap gap-3">
     <div>
         <a href="<?= site_url('gap') ?>" class="text-muted text-decoration-none small">
-            <i class="bi bi-arrow-left me-1"></i>Gap Analysis
+            <i class="bi bi-arrow-left me-1"></i><?= lang('Gap.back_to_gap') ?>
         </a>
         <h1 class="h3 mb-0 fw-bold mt-1">
             <?= esc($sv['standard_code']) ?>
@@ -26,21 +26,21 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
         <p class="text-muted mb-0"><?= esc($sv['standard_name']) ?></p>
     </div>
     <a href="<?= site_url('gap/' . $versionId . '/summary') ?>" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-bar-chart me-1"></i>Résumé
+        <i class="bi bi-bar-chart me-1"></i><?= lang('Gap.resume_btn') ?>
     </a>
 </div>
 
 <?php if ($isLocked): ?>
 <div class="alert alert-success d-flex align-items-center gap-2">
     <i class="bi bi-lock-fill fs-5"></i>
-    <span>Cette évaluation a été <strong>soumise</strong>. Les réponses sont en lecture seule.</span>
+    <span><?= lang('Gap.locked_msg') ?></span>
 </div>
 <?php endif; ?>
 
 <!-- ── Sticky progress bar ───────────────────────────────────────────────── -->
 <div id="stickyBar" class="sticky-top bg-white border-bottom shadow-sm py-2 px-3 mb-4" style="z-index:1010;top:0">
     <div class="d-flex align-items-center gap-3">
-        <span class="text-muted small text-nowrap">Progression</span>
+        <span class="text-muted small text-nowrap"><?= lang('Gap.progression') ?></span>
         <div class="progress flex-grow-1" style="height:10px">
             <div id="globalProgressBar" class="progress-bar <?= $isLocked ? 'bg-success' : 'bg-primary' ?>"
                  style="width:<?= $pct ?>%"></div>
@@ -48,14 +48,10 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
         <span id="globalProgressText" class="text-muted small fw-semibold text-nowrap">
             <?= $answered ?> / <?= $total ?>
         </span>
-        <span id="globalScoreBadge" class="badge text-nowrap
-            <?= $score >= 75 ? 'bg-success' : ($score >= 50 ? 'bg-warning text-dark' : ($answered > 0 ? 'bg-danger' : 'bg-secondary')) ?>">
-            Score : <?= $answered > 0 ? number_format($score, 1) . '%' : '—' ?>
-        </span>
         <?php if (! $isLocked): ?>
         <button id="submitBtn" type="button"
                 class="btn btn-success btn-sm text-nowrap <?= $answered < $total ? 'disabled' : '' ?>">
-            <i class="bi bi-send me-1"></i>Soumettre
+            <i class="bi bi-send me-1"></i><?= lang('Gap.submit_btn') ?>
         </button>
         <?php endif; ?>
     </div>
@@ -115,11 +111,6 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                     <div class="d-flex align-items-center gap-2 mb-2">
                         <span class="badge bg-secondary font-monospace" style="font-size:.72rem"><?= esc($control['code']) ?></span>
                         <span class="fw-semibold"><?= esc($control['title']) ?></span>
-                        <?php if ($ans): ?>
-                        <span class="ms-auto badge <?= $ans['status'] === 'conforme' ? 'bg-success' : ($ans['status'] === 'partiel' ? 'bg-warning text-dark' : 'bg-danger') ?>">
-                            <?= $ans['score_pct'] ?>%
-                        </span>
-                        <?php endif; ?>
                     </div>
 
 <?php if ($qa): ?>
@@ -160,9 +151,6 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                                 <?= $isLocked ? 'disabled' : '' ?>>
                             <span class="badge bg-white text-dark border me-2 font-monospace"><?= strtoupper($ch['choice_key']) ?></span>
                             <?= esc($ch['label']) ?>
-                            <?php if ($ch['is_trap']): ?>
-                            <span class="position-absolute top-0 end-0 mt-1 me-2" title="Réponse piège">🪤</span>
-                            <?php endif; ?>
                         </button>
 <?php endforeach; ?>
                     </div>
@@ -195,7 +183,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                         <button type="button"
                                 class="save-answer-btn btn btn-primary btn-sm"
                                 data-control-id="<?= $cid ?>">
-                            <i class="bi bi-floppy me-1"></i>Enregistrer
+                            <i class="bi bi-floppy me-1"></i><?= lang('Gap.save_btn') ?>
                         </button>
                         <span class="save-indicator text-muted small"></span>
                     </div>
@@ -204,7 +192,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                     <!-- Show already-saved justification/other_text in read mode -->
                     <?php if ($ans && $ans['is_manual_review'] && $ans['other_text']): ?>
                     <div class="mt-2 small text-info border border-info-subtle rounded p-2">
-                        <i class="bi bi-info-circle me-1"></i><strong>Évaluation manuelle :</strong>
+                        <i class="bi bi-info-circle me-1"></i><strong><?= lang('Gap.manual_eval_display') ?></strong>
                         <?= nl2br(esc($ans['other_text'])) ?>
                     </div>
                     <?php elseif ($ans && $ans['justification']): ?>
@@ -214,7 +202,7 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                     <?php endif; ?>
 
 <?php else: ?>
-                    <p class="text-muted fst-italic small">Question non disponible pour ce contrôle.</p>
+                    <p class="text-muted fst-italic small"><?= lang('Gap.question_unavailable') ?></p>
 <?php endif; ?>
 
                 </div><!-- /.quiz-card -->
@@ -234,18 +222,17 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header border-0">
-                <h5 class="modal-title fw-bold">Confirmer la soumission</h5>
+                <h5 class="modal-title fw-bold"><?= lang('Gap.submit_modal_title') ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>Vous avez répondu à <strong><?= $answered ?> / <?= $total ?></strong> questions.</p>
-                <p>Une fois soumise, votre évaluation sera verrouillée et ne pourra plus être modifiée.</p>
-                <p class="mb-0"><strong>Score actuel : <span id="modalScore"><?= number_format($score, 1) ?>%</span></strong></p>
+                <p><?= lang('Gap.submit_modal_warning') ?></p>
+                <p class="mb-0"><?= lang('Gap.submit_modal_answered') ?> : <strong><span id="modalAnswered"><?= $answered ?></span> / <?= $total ?></strong>.</p>
             </div>
             <div class="modal-footer border-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= lang('Gap.cancel_btn') ?></button>
                 <button type="button" id="confirmSubmitBtn" class="btn btn-success">
-                    <i class="bi bi-send me-1"></i>Soumettre l'évaluation
+                    <i class="bi bi-send me-1"></i><?= lang('Gap.confirm_submit_btn') ?>
                 </button>
             </div>
         </div>
@@ -262,20 +249,12 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
     // ── Track current global progress ──────────────────────────────────────
     let gAnswered = <?= $answered ?>;
     let gTotal    = <?= $total ?>;
-    let gScore    = <?= number_format($score, 4, '.', '') ?>;
 
-    function updateStickyBar(answered, total, score) {
-        gAnswered = answered; gTotal = total; gScore = score;
+    function updateStickyBar(answered, total) {
+        gAnswered = answered; gTotal = total;
         const pct = total > 0 ? Math.round(answered / total * 100) : 0;
         document.getElementById('globalProgressBar').style.width = pct + '%';
         document.getElementById('globalProgressText').textContent  = answered + ' / ' + total;
-        const badge = document.getElementById('globalScoreBadge');
-        badge.textContent = 'Score : ' + (answered > 0 ? score.toFixed(1) + '%' : '—');
-        badge.className   = 'badge text-nowrap ' + (
-            answered === 0   ? 'bg-secondary' :
-            score >= 75      ? 'bg-success'   :
-            score >= 50      ? 'bg-warning text-dark' : 'bg-danger'
-        );
         const submitBtn = document.getElementById('submitBtn');
         if (submitBtn) {
             if (answered >= total) submitBtn.classList.remove('disabled');
@@ -286,21 +265,21 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
     // ── Refresh domain progress badges ────────────────────────────────────
     function refreshDomainBadge(domainId) {
         const cards  = document.querySelectorAll(`.quiz-card[data-domain-id="${domainId}"]`);
-        let answered = 0, totalScore = 0;
+        let answered = 0;
         cards.forEach(c => {
             const active = c.querySelector('.quiz-choice.btn-success, .quiz-choice.btn-warning, .quiz-choice.btn-danger');
-            if (active) { answered++; totalScore += parseFloat(active.dataset.scorePct || 0); }
+            if (active) answered++;
         });
         const badge = document.querySelector(`.domain-progress-badge[data-domain-id="${domainId}"]`);
         if (!badge) return;
         if (answered === 0) {
-            badge.textContent = 'Non démarré';
+            badge.textContent = '';
             badge.className   = 'ms-auto me-3 badge bg-secondary domain-progress-badge';
         } else {
-            const avg = totalScore / answered;
-            badge.textContent = answered + '/' + cards.length + ' — ' + avg.toFixed(1) + '%';
+            const allDone = answered === cards.length;
+            badge.textContent = answered + '/' + cards.length;
             badge.className   = 'ms-auto me-3 badge domain-progress-badge ' +
-                (avg >= 75 ? 'bg-success' : avg >= 50 ? 'bg-warning text-dark' : 'bg-danger');
+                (allDone ? 'bg-success' : 'bg-primary');
         }
     }
 
@@ -399,20 +378,8 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                     else if (data.answer.status === 'partiel') card.classList.add('border-warning');
                     else                                       card.classList.add('border-danger');
 
-                    // Show score badge in card header
-                    let scoreBadge = card.querySelector('.control-score-badge');
-                    if (!scoreBadge) {
-                        scoreBadge = document.createElement('span');
-                        scoreBadge.className = 'ms-auto badge control-score-badge';
-                        card.querySelector('.d-flex.align-items-center.gap-2').appendChild(scoreBadge);
-                    }
-                    scoreBadge.textContent = data.answer.score_pct + '%';
-                    scoreBadge.className   = 'ms-auto badge control-score-badge ' +
-                        (statusColour[data.answer.status]
-                            ? statusColour[data.answer.status].replace('btn-', 'bg-') : 'bg-secondary');
-
                     // Global progress
-                    updateStickyBar(data.answered, data.total, data.score);
+                    updateStickyBar(data.answered, data.total);
                     refreshDomainBadge(card.dataset.domainId);
 
                     if (indicator) indicator.innerHTML = '<i class="bi bi-check-circle-fill text-success"></i>';
@@ -420,7 +387,8 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
 
                     // If complete, offer to submit
                     if (data.is_complete) {
-                        document.getElementById('modalScore').textContent = data.score.toFixed(1) + '%';
+                        const el = document.getElementById('modalAnswered');
+                        if (el) el.textContent = data.answered;
                         bootstrap.Modal.getOrCreateInstance(document.getElementById('submitModal')).show();
                     }
 
@@ -444,14 +412,13 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) {
         submitBtn.addEventListener('click', () => {
-            document.getElementById('modalScore').textContent = gScore.toFixed(1) + '%';
             bootstrap.Modal.getOrCreateInstance(document.getElementById('submitModal')).show();
         });
     }
 
     document.getElementById('confirmSubmitBtn').addEventListener('click', async function () {
         this.disabled = true;
-        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Envoi…';
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span><?= lang('Gap.submitting') ?>';
 
         const body = new URLSearchParams({ [CSRF_NAME]: csrfHash });
         try {
@@ -464,12 +431,12 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
             if (data.ok && data.redirect_to) {
                 window.location.href = data.redirect_to;
             } else {
-                alert(data.message || 'Erreur lors de la soumission.');
+                alert(data.message || '<?= lang('Gap.submit_error') ?>');
                 this.disabled = false;
-                this.innerHTML = '<i class="bi bi-send me-1"></i>Soumettre l\'évaluation';
+                this.innerHTML = '<i class="bi bi-send me-1"></i><?= lang('Gap.confirm_submit_btn') ?>';
             }
         } catch (e) {
-            alert('Erreur réseau.');
+            alert('<?= lang('Gap.network_error') ?>');
             this.disabled = false;
         }
     });
@@ -482,10 +449,6 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
         // Store score_pct on buttons that are already selected
         const selected = card.querySelector('.quiz-choice.btn-success, .quiz-choice.btn-warning, .quiz-choice.btn-danger');
         if (selected) {
-            // Extract score from the badge if present
-            const badge = card.querySelector('.control-score-badge');
-            if (badge) selected.dataset.scorePct = parseFloat(badge.textContent) || 0;
-
             // Show justification/other_text if saved
             const jusArea   = card.querySelector('.justification-area');
             const otherArea = card.querySelector('.other-text-area');
