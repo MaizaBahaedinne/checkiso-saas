@@ -346,10 +346,23 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
             try {
                 const res  = await fetch(`/gap/${VERSION_ID}/answer`, {
                     method:  'POST',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
                     body,
                 });
-                const data = await res.json();
+
+                let data;
+                try {
+                    data = await res.json();
+                } catch (jsonErr) {
+                    const text = await res.text().catch(() => '');
+                    if (indicator) indicator.innerHTML = `<span class="text-danger">Erreur HTTP ${res.status}</span>`;
+                    console.error('Non-JSON response:', res.status, text.substring(0, 500));
+                    saveBtn.disabled = false;
+                    return;
+                }
 
                 if (data.csrf_hash) {
                     csrfHash = data.csrf_hash;
@@ -400,8 +413,8 @@ $pct        = $total > 0 ? round($answered / $total * 100) : 0;
                     if (indicator) indicator.innerHTML = '<i class="bi bi-exclamation-circle-fill text-danger"></i> ' + (data.error || 'Erreur');
                 }
             } catch (e) {
-                if (indicator) indicator.innerHTML = '<i class="bi bi-exclamation-circle-fill text-danger"></i>';
-                console.error(e);
+                if (indicator) indicator.innerHTML = `<i class="bi bi-exclamation-circle-fill text-danger"></i> <span class="text-danger small">${e.message || 'Erreur réseau'}</span>`;
+                console.error('saveAnswer error:', e);
             } finally {
                 saveBtn.disabled = false;
             }

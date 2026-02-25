@@ -120,9 +120,8 @@ class GapController extends BaseController
 
     public function saveAnswer(int $versionId): ResponseInterface
     {
-        if (! $this->request->isAJAX()) {
-            return $this->response->setStatusCode(400)->setJSON(['error' => 'AJAX uniquement.']);
-        }
+        // Always return JSON (no isAJAX check — some reverse proxies strip X-Requested-With)
+        $this->response->setHeader('Content-Type', 'application/json');
 
         $tenantId  = (int) session()->get('tenant_id');
         $userId    = (int) session()->get('user_id');
@@ -206,29 +205,19 @@ class GapController extends BaseController
             ->first();
 
         if (! $gapSession) {
-            if ($this->request->isAJAX()) {
-                return $this->response->setStatusCode(404)->setJSON(['error' => 'Session introuvable.']);
-            }
-            return redirect()->to('/gap')->with('error', 'Session introuvable.')->send();
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Session introuvable.']);
         }
 
         $result = $this->sessionModel->finalize($gapSession['id'], $userId);
 
         if (! $result['ok']) {
-            if ($this->request->isAJAX()) {
-                return $this->response->setStatusCode(422)->setJSON($result);
-            }
-            return redirect()->to("/gap/{$versionId}")->with('error', $result['message'])->send();
+            return $this->response->setStatusCode(422)->setJSON($result);
         }
 
-        if ($this->request->isAJAX()) {
-            return $this->response->setJSON([
-                'ok'          => true,
-                'redirect_to' => base_url("/gap/{$versionId}/summary"),
-            ]);
-        }
-
-        return redirect()->to("/gap/{$versionId}/summary");
+        return $this->response->setJSON([
+            'ok'          => true,
+            'redirect_to' => base_url("/gap/{$versionId}/summary"),
+        ]);
     }
 
     // =========================================================================
