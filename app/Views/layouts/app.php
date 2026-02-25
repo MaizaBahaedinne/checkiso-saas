@@ -37,6 +37,9 @@
         <a href="<?= site_url('catalog') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'catalog') ? 'active' : '' ?>">
             📚 Standards
         </a>
+        <a href="<?= site_url('gap') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'gap') ? 'active' : '' ?>">
+            📊 Gap Analysis
+        </a>
         <?php if (session()->get('role_code') === 'org.admin'): ?>
         <a href="<?= site_url('org/requests') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/requests') ? 'active' : '' ?>">
             📋 Join requests

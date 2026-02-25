@@ -38,6 +38,12 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->post('/catalog/(:num)/subscribe',       'Web\CatalogController::subscribe/$1');
     $routes->post('/catalog/(:num)/unsubscribe',     'Web\CatalogController::unsubscribe/$1');
 
+    // Gap Analysis — any member can assess
+    $routes->get('/gap',                             'Web\GapController::index');
+    $routes->get('/gap/(:num)',                      'Web\GapController::show/$1');
+    $routes->post('/gap/(:num)/control',             'Web\GapController::saveControl/$1');
+    $routes->get('/gap/(:num)/summary',              'Web\GapController::summary/$1');
+
     // -----------------------------------------------------------------------
     // Admin-only routes (role: org.admin)
     // -----------------------------------------------------------------------
