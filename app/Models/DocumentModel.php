@@ -64,7 +64,7 @@ class DocumentModel extends Model
         $rows = $this->db->table('documents')
             ->select('category, COUNT(*) as count')
             ->where('tenant_id', $tenantId)
-            ->whereNull('deleted_at')
+            ->where('deleted_at IS NULL', null, false)
             ->groupBy('category')
             ->get()->getResultArray();
 

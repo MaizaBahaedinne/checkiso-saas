@@ -17,11 +17,11 @@ $catIcons = [
     'other'     => 'bi-file-earmark',
 ];
 
-function humanSize(int $bytes): string {
+$humanSize = static function (int $bytes): string {
     if ($bytes < 1024) return $bytes . ' B';
     if ($bytes < 1048576) return round($bytes / 1024, 1) . ' KB';
     return round($bytes / 1048576, 1) . ' MB';
-}
+};
 ?>
 
 <!-- ── Header ───────────────────────────────────────────────────────────── -->
@@ -163,7 +163,7 @@ function humanSize(int $bytes): string {
                         <?= lang('Doc.cat_' . $doc['category']) ?>
                     </span>
                 </td>
-                <td class="text-muted small"><?= humanSize((int)$doc['file_size']) ?></td>
+                <td class="text-muted small"><?= $humanSize((int)$doc['file_size']) ?></td>
                 <td class="text-muted small"><?= date('d/m/Y', strtotime($doc['created_at'])) ?></td>
                 <td class="small">
                     <?php if ($doc['linked_control_id']): ?>
