@@ -64,12 +64,17 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->post('/action-plan/(:num)/status',      'Web\ActionPlanController::updateStatus/$1');
     $routes->post('/action-plan/(:num)/delete',      'Web\ActionPlanController::delete/$1');
 
-    // Documents — evidence & policy library
-    $routes->get('/docs',                            'Web\DocumentController::index');
-    $routes->get('/docs/upload',                     'Web\DocumentController::upload');
-    $routes->post('/docs/upload',                    'Web\DocumentController::store');
-    $routes->get('/docs/(:num)/download',            'Web\DocumentController::download/$1');
-    $routes->post('/docs/(:num)/delete',             'Web\DocumentController::destroy/$1');
+    // Documents — wiki-style knowledge base
+    $routes->get('/docs',                                'Web\DocumentController::index');
+    $routes->get('/docs/create',                         'Web\DocumentController::create');
+    $routes->post('/docs',                               'Web\DocumentController::store');
+    $routes->get('/docs/(:num)',                         'Web\DocumentController::show/$1');
+    $routes->get('/docs/(:num)/edit',                    'Web\DocumentController::edit/$1');
+    $routes->post('/docs/(:num)/update',                 'Web\DocumentController::update/$1');
+    $routes->get('/docs/(:num)/history',                 'Web\DocumentController::history/$1');
+    $routes->get('/docs/(:num)/version/(:num)',           'Web\DocumentController::showVersion/$1/$2');
+    $routes->post('/docs/(:num)/restore/(:num)',          'Web\DocumentController::restore/$1/$2');
+    $routes->post('/docs/(:num)/delete',                 'Web\DocumentController::destroy/$1');
 
     // -----------------------------------------------------------------------
     // Admin-only routes (role: org.admin)
