@@ -14,4 +14,5 @@ return [
     'switch_lang'    => 'Language',
     'profile'        => 'My profile',
     'action_plan'    => 'Action plans',
+    'documents'      => 'Documents',
 ];

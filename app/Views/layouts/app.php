@@ -59,6 +59,9 @@
         <a href="<?= site_url('action-plan') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'action-plan') ? 'active' : '' ?>">
             🎯 <?= lang('Nav.action_plan') ?>
         </a>
+        <a href="<?= site_url('docs') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'docs') ? 'active' : '' ?>">
+            📄 <?= lang('Nav.documents') ?>
+        </a>
         <?php if (session()->get('role_code') === 'org.admin'): ?>
         <a href="<?= site_url('org/requests') ?>" class="nav-link px-3 py-2 <?= str_starts_with(uri_string(), 'org/requests') ? 'active' : '' ?>">
             📋 <?= lang('Nav.join_requests') ?>

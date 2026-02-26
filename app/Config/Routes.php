@@ -64,6 +64,13 @@ $routes->group('', ['filter' => 'auth'], static function ($routes): void {
     $routes->post('/action-plan/(:num)/status',      'Web\ActionPlanController::updateStatus/$1');
     $routes->post('/action-plan/(:num)/delete',      'Web\ActionPlanController::delete/$1');
 
+    // Documents — evidence & policy library
+    $routes->get('/docs',                            'Web\DocumentController::index');
+    $routes->get('/docs/upload',                     'Web\DocumentController::upload');
+    $routes->post('/docs/upload',                    'Web\DocumentController::store');
+    $routes->get('/docs/(:num)/download',            'Web\DocumentController::download/$1');
+    $routes->post('/docs/(:num)/delete',             'Web\DocumentController::destroy/$1');
+
     // -----------------------------------------------------------------------
     // Admin-only routes (role: org.admin)
     // -----------------------------------------------------------------------
